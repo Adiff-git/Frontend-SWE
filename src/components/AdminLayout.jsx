@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import './Layout.css'
+import './AdminLayout.css'
 
 // Shared page frame: a top bar with a switch button, and the current page below it.
-function Layout() {
+function AdminLayout() {
   const { pathname } = useLocation()
   const inAdmin = pathname.startsWith('/admin')
 
@@ -33,4 +33,4 @@ function Layout() {
   )
 }
 
-export default Layout
+export default AdminLayout
