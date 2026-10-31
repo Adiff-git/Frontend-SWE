@@ -1,0 +1,6 @@
+45d3d1c | 2026-10-30 08:43:26 +0700 | Ng Cong Kien | feat: implement the api layer, with api endpoint for auth
+b62b3a8 | 2026-10-27 07:25:24 +0700 | Nguyễn Công Kiên | Merge pull request #1 from Adiff-git/chore/add-speckit
+c7ca273 | 2026-10-26 13:37:46 +0700 | Ng Cong Kien | chore: add speckit setup and constitution
+777b021 | 2026-10-25 21:17:14 +0700 | Ng Cong Kien | chore: routing setup
+8503ae9 | 2026-10-20 00:42:58 +0700 | Ng Cong Kien | chore: set up initial structure
+3f6269a | 2026-10-02 17:20:27 +0700 | Nguyen Hoang Gia | Initial commit
