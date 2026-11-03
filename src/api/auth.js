@@ -1,18 +1,18 @@
 import { api, storeSession } from './client.js';
 import { tokens } from './tokenStore.js';
 
-async function startSession(path, body) {
+async function startSession(path, body, { remember = false } = {}) {
   const { data, headers } = await api.post(path, body, { auth: false, withHeaders: true });
-  storeSession(headers, data);
+  storeSession(headers, data, remember);
 }
 
 // Register accepts only username + password (see spec).
-export const register = (username, password) =>
-  startSession('/api/auth/register', { username, password });
+export const register = (username, password, options) =>
+  startSession('/api/auth/register', { username, password }, options);
 
 // `identifier` = username OR email (not "email").
-export const login = (identifier, password) =>
-  startSession('/api/auth/login', { identifier, password });
+export const login = (identifier, password, options) =>
+  startSession('/api/auth/login', { identifier, password }, options);
 
 export async function logout() {
   const refreshToken = tokens.getRefresh();
@@ -26,5 +26,7 @@ export async function logout() {
 }
 
 export const getCurrentUser = () => api.get('/api/me');
+
+export const updateDisplayName = (displayName) => api.put('/api/me', { displayName });
 
 export { refreshSession } from './client.js';

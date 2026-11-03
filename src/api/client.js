@@ -81,13 +81,13 @@ export const api = {
 
 // Login/register/refresh all answer the same way: refresh token in the JSON body,
 // access JWT in the Authorization RESPONSE header.
-export function storeSession(headers, body) {
+export function storeSession(headers, body, remember) {
   const access = headers.get('Authorization')?.replace(/^Bearer /, '');
   if (!access) {
     // Usually means the backend does not send Access-Control-Expose-Headers: Authorization
     throw new ApiError(0, 'Authorization header not readable from the response (CORS expose-headers?)', null);
   }
-  tokens.setRefresh(body.refreshToken); // first: the old refresh token is already consumed
+  tokens.setRefresh(body.refreshToken, remember); // first: the old refresh token is already consumed
   tokens.setAccess(access);
 }
 
