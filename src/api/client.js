@@ -14,10 +14,13 @@ export class ApiError extends Error {
 
 // The app (e.g. AuthProvider) registers what should happen when the session is dead.
 let onSessionExpired = () => {};
-export function setSessionExpiredHandler(fn) { onSessionExpired = fn; }
+export function setSessionExpiredHandler(fn) {
+  onSessionExpired = typeof fn === 'function' ? fn : () => {};
+}
 
 function buildUrl(path, params) {
-  const url = new URL(path, BASE_URL || window.location.origin);
+  const base = BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080');
+  const url = new URL(path, base);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       // .set (not .append): the contract rejects duplicate query parameters
@@ -27,11 +30,12 @@ function buildUrl(path, params) {
   return url;
 }
 
-async function send(url, { method, body, headers, auth }) {
+async function send(url, { method, body, headers, auth, signal }) {
   const token = tokens.getAccess();
   try {
     return await fetch(url, {
       method,
+      signal,
       headers: {
         // Only when there is a body: a Content-Type on GET forces a CORS preflight every time.
         ...(body !== undefined && { 'Content-Type': 'application/json' }),
@@ -40,7 +44,10 @@ async function send(url, { method, body, headers, auth }) {
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-  } catch {
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw err;
+    }
     throw new ApiError(0, 'Network error. Please check your connection.', null);
   }
 }
@@ -56,14 +63,19 @@ const toError = (res, data) =>
  *  - auth (default true): attach the access token and try one refresh on 401.
  *    Pass false for login/register/refresh/logout and public calls where you want no token.
  *  - withHeaders: return { data, headers } (needed because the access JWT arrives in a response header)
+ *  - signal: optional AbortSignal
  */
-async function request(path, { method = 'GET', body, params, headers, auth = true, withHeaders = false } = {}) {
+async function request(path, { method = 'GET', body, params, headers, auth = true, withHeaders = false, signal } = {}) {
   const url = buildUrl(path, params);
-  let res = await send(url, { method, body, headers, auth });
+  let res = await send(url, { method, body, headers, auth, signal });
 
   if (res.status === 401 && auth && tokens.hasSession()) {
     await refreshSession(); // throws if the session is really dead
-    res = await send(url, { method, body, headers, auth }); // retry once
+    res = await send(url, { method, body, headers, auth, signal }); // retry once
+    if (res.status === 401) {
+      tokens.clear();
+      onSessionExpired();
+    }
   }
 
   const data = await parse(res);
@@ -81,7 +93,11 @@ export const api = {
 
 // Login/register/refresh all answer the same way: refresh token in the JSON body,
 // access JWT in the Authorization RESPONSE header.
-export function storeSession(headers, body, remember) {
+export function storeSession(headers, body, remember, expectedGeneration) {
+  if (expectedGeneration !== undefined && expectedGeneration !== tokens.getGeneration()) {
+    // Stale response from a previous generation: ignore to prevent race conditions
+    return false;
+  }
   const access = headers.get('Authorization')?.replace(/^Bearer /, '');
   if (!access) {
     // Usually means the backend does not send Access-Control-Expose-Headers: Authorization
@@ -89,33 +105,46 @@ export function storeSession(headers, body, remember) {
   }
   tokens.setRefresh(body.refreshToken, remember); // first: the old refresh token is already consumed
   tokens.setAccess(access);
+  return true;
 }
 
 let refreshPromise = null;
 
 export function refreshSession() {
-  // Same-tab dedupe (refreshPromise) + cross-tab lock: the backend revokes the whole
-  // session if a consumed refresh token is ever reused.
-  refreshPromise ??= navigator.locks
-    .request('auth-refresh', async () => {
-      const refreshToken = tokens.getRefresh(); // read inside the lock
-      if (!refreshToken) throw new ApiError(401, 'No session', null);
+  if (refreshPromise) return refreshPromise;
 
-      const res = await send(buildUrl('/api/auth/refresh'), {
-        method: 'POST',
-        body: { refreshToken },
-        auth: false,
-      });
-      const data = await parse(res);
+  const runRefresh = async () => {
+    const capturedGen = tokens.getGeneration();
+    const refreshToken = tokens.getRefresh(); // read inside the lock
+    if (!refreshToken) throw new ApiError(401, 'No session', null);
 
-      if (res.status === 401) {
-        // Only a real 401 means the session is dead. 409 (retry) / 500 / network: keep the tokens.
-        tokens.clear();
-        onSessionExpired();
-      }
-      if (!res.ok) throw toError(res, data);
-      storeSession(res.headers, data);
-    })
-    .finally(() => { refreshPromise = null; });
+    const res = await send(buildUrl('/api/auth/refresh'), {
+      method: 'POST',
+      body: { refreshToken },
+      auth: false,
+    });
+    const data = await parse(res);
+
+    if (res.status === 401) {
+      // Only a real 401 means the session is dead. 409 (retry) / 500 / network: keep the tokens.
+      tokens.clear();
+      onSessionExpired();
+    }
+    if (!res.ok) throw toError(res, data);
+
+    if (capturedGen === tokens.getGeneration()) {
+      storeSession(res.headers, data, undefined, capturedGen);
+    }
+  };
+
+  // Same-tab dedupe (refreshPromise) + cross-tab lock when Web Locks API is available
+  if (typeof navigator !== 'undefined' && navigator.locks?.request) {
+    refreshPromise = navigator.locks
+      .request('auth-refresh', runRefresh)
+      .finally(() => { refreshPromise = null; });
+  } else {
+    refreshPromise = runRefresh().finally(() => { refreshPromise = null; });
+  }
+
   return refreshPromise;
 }

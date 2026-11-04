@@ -1,9 +1,11 @@
 import { api, storeSession } from './client.js';
 import { tokens } from './tokenStore.js';
 
-async function startSession(path, body, { remember = false } = {}) {
+export async function startSession(path, body, { remember = false } = {}) {
+  const gen = tokens.nextGeneration();
   const { data, headers } = await api.post(path, body, { auth: false, withHeaders: true });
-  storeSession(headers, data, remember);
+  const committed = storeSession(headers, data, remember, gen);
+  return { data, headers, committed, generation: gen };
 }
 
 // Register accepts only username + password (see spec).
@@ -14,19 +16,26 @@ export const register = (username, password, options) =>
 export const login = (identifier, password, options) =>
   startSession('/api/auth/login', { identifier, password }, options);
 
-export async function logout() {
-  const refreshToken = tokens.getRefresh();
+export async function revokeToken(refreshToken) {
+  if (!refreshToken) return;
   try {
-    if (refreshToken) await api.post('/api/auth/logout', { refreshToken }, { auth: false });
+    await api.post('/api/auth/logout', { refreshToken }, { auth: false });
   } catch {
-    // best effort: the user must be signed out locally even if the server call fails
-  } finally {
-    tokens.clear();
+    // Best effort revocation; ignore failure
   }
 }
 
-export const getCurrentUser = () => api.get('/api/me');
+export async function logout() {
+  const refreshToken = tokens.getRefresh();
+  // Invalidate local session and bump generation immediately
+  tokens.clear();
+  if (refreshToken) {
+    await revokeToken(refreshToken);
+  }
+}
 
-export const updateDisplayName = (displayName) => api.put('/api/me', { displayName });
+export const getCurrentUser = (options) => api.get('/api/me', undefined, options);
+
+export const updateDisplayName = (displayName, options) => api.put('/api/me', { displayName }, options);
 
 export { refreshSession } from './client.js';
