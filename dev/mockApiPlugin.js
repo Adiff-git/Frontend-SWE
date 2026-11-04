@@ -194,16 +194,17 @@ export function createMockApiMiddleware() {
           );
         }
 
-        const { username, password, ...extra } = body;
-        if (Object.keys(extra).length > 0 || typeof username !== 'string' || typeof password !== 'string') {
+        const { email: rawEmail, username: rawUsername, password } = body;
+        const emailOrUser = rawEmail || rawUsername;
+        if (typeof emailOrUser !== 'string' || typeof password !== 'string') {
           return problemJson(res, 400, 'Bad Request', 'Invalid registration payload.', pathname);
         }
 
-        const trimmedUser = username.trim();
-        const codePointLength = [...trimmedUser].length;
-        if (codePointLength < 4 || codePointLength > 50 || trimmedUser.includes('@')) {
-          return problemJson(res, 400, 'Bad Request', 'Invalid username policy.', pathname, {
-            username: ['Tên đăng nhập cần 4–50 ký tự và không chứa @.'],
+        const trimmedEmail = emailOrUser.trim();
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!EMAIL_REGEX.test(trimmedEmail) && !trimmedEmail.includes('@') && [...trimmedEmail].length < 4) {
+          return problemJson(res, 400, 'Bad Request', 'Invalid email.', pathname, {
+            email: ['Email không hợp lệ. Ví dụ: bạn@example.com'],
           });
         }
 
@@ -215,23 +216,27 @@ export function createMockApiMiddleware() {
           });
         }
 
-        const isDuplicate = users.some((u) => u.username.toLowerCase() === trimmedUser.toLowerCase());
+        const isDuplicate = users.some(
+          (u) =>
+            u.email.toLowerCase() === trimmedEmail.toLowerCase() ||
+            u.username.toLowerCase() === trimmedEmail.toLowerCase(),
+        );
         if (isDuplicate) {
           return problemJson(
             res,
             409,
             'Conflict',
-            'Tên đăng nhập đã được sử dụng hoặc yêu cầu đang xung đột.',
+            'Email đã được sử dụng hoặc yêu cầu đang xung đột.',
             pathname,
           );
         }
 
         const newUser = {
           id: users.length + 1,
-          username: trimmedUser,
+          username: trimmedEmail,
           password,
           displayName: '',
-          email: `${trimmedUser.toLowerCase()}@example.com`,
+          email: trimmedEmail,
           phoneNumber: null,
           accountStatus: 'ACTIVE',
           gender: null,
@@ -266,8 +271,9 @@ export function createMockApiMiddleware() {
           );
         }
 
-        const { identifier, password, ...extra } = body;
-        if (Object.keys(extra).length > 0 || typeof identifier !== 'string' || typeof password !== 'string') {
+        const { identifier: rawIdentifier, email: rawEmail, password } = body;
+        const identifier = rawIdentifier || rawEmail;
+        if (typeof identifier !== 'string' || typeof password !== 'string') {
           return problemJson(res, 400, 'Bad Request', 'Invalid login payload.', pathname);
         }
 

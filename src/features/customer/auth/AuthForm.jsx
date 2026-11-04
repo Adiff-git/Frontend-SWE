@@ -4,6 +4,7 @@ import Button from '../../../components/Button';
 import FormField from '../../../components/FormField';
 import PasswordField from './PasswordField';
 import useAuthForm from './useAuthForm';
+import googleIcon from '../../../assets/auth/google.svg';
 
 function AuthForm({ signup, destination }) {
   const form = useAuthForm(signup);
@@ -84,19 +85,20 @@ function AuthForm({ signup, destination }) {
           />
         )}
         <FormField
-          {...fieldProps('username')}
-          label="Tên đăng nhập"
-          placeholder={signup ? 'Nhập tên đăng nhập' : 'Nhập tên đăng nhập hoặc email'}
-          autoComplete="username"
+          {...fieldProps('email')}
+          label="Email"
+          placeholder={signup ? 'bạn@example.com' : 'Nhập email'}
+          type="email"
+          autoComplete="email"
           autoCapitalize="none"
           spellCheck={false}
           required
-          hint={signup ? 'Từ 4–50 ký tự, không chứa @.' : undefined}
+          hint={signup ? 'Ví dụ: bạn@example.com' : undefined}
         />
         <PasswordField
           {...fieldProps('password')}
           label="Mật khẩu"
-          placeholder="Nhập mật khẩu"
+          placeholder={signup ? '••••••••' : 'Nhập mật khẩu'}
           required
           autoComplete={signup ? 'new-password' : 'current-password'}
           hint={signup ? 'Tối thiểu 8 ký tự.' : undefined}
@@ -105,7 +107,7 @@ function AuthForm({ signup, destination }) {
           <PasswordField
             {...fieldProps('confirmPassword')}
             label="Xác nhận mật khẩu"
-            placeholder="Nhập lại mật khẩu"
+            placeholder="••••••••"
             required
             autoComplete="new-password"
           />
@@ -131,6 +133,15 @@ function AuthForm({ signup, destination }) {
         <Button type="submit" loading={form.pending}>
           {form.pending ? 'Đang xử lý…' : signup ? 'Đăng ký' : 'Đăng nhập'}
         </Button>
+        <button
+          type="button"
+          className="auth-form__google-btn"
+          disabled={form.pending}
+          onClick={() => alert('Đăng nhập bằng Google sẽ sớm khả dụng.')}
+        >
+          <img src={googleIcon} alt="" width="18" height="18" />
+          <span>{signup ? 'Tiếp tục bằng Google' : 'Đăng nhập bằng Google'}</span>
+        </button>
         <span className="auth-form__live" role="status">
           {form.pending ? 'Đang xử lý yêu cầu. Vui lòng chờ.' : ''}
         </span>

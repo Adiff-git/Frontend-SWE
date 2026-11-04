@@ -8,11 +8,11 @@ export async function startSession(path, body, { remember = false } = {}) {
   return { data, headers, committed, generation: gen };
 }
 
-// Register accepts only username + password (see spec).
-export const register = (username, password, options) =>
-  startSession('/api/auth/register', { username, password }, options);
+// Register accepts email + password (and includes username for backward compatibility)
+export const register = (email, password, options) =>
+  startSession('/api/auth/register', { email, username: email, password }, options);
 
-// `identifier` = username OR email (not "email").
+// `identifier` = email OR username
 export const login = (identifier, password, options) =>
   startSession('/api/auth/login', { identifier, password }, options);
 

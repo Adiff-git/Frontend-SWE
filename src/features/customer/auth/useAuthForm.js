@@ -13,7 +13,7 @@ export default function useAuthForm(signup) {
   } = useAuth();
 
   const [values, setValues] = useState({
-    username: '',
+    email: '',
     password: '',
     confirmPassword: '',
     displayName: '',
@@ -31,7 +31,7 @@ export default function useAuthForm(signup) {
 
   const session = useMutation({
     mutationFn: (form) =>
-      (signup ? ctxRegister : ctxLogin)(form.username.trim(), form.password, {
+      (signup ? ctxRegister : ctxLogin)(form.email.trim(), form.password, {
         remember: form.remember,
       }),
     retry: false,
@@ -54,7 +54,7 @@ export default function useAuthForm(signup) {
   );
 
   for (const [field, messages] of Object.entries(session.error?.fieldErrors || {})) {
-    const name = field === 'identifier' ? 'username' : field;
+    const name = field === 'identifier' || field === 'username' ? 'email' : field;
     if (Array.isArray(messages) && typeof messages[0] === 'string') {
       errors[name] = messages[0];
     }

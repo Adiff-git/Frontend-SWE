@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom'
-import logo from '../../../assets/auth/logo.png'
+import { Link } from 'react-router-dom';
+import logo from '../../../assets/auth/logo.png';
 
 function AuthFooter() {
   return (
     <footer className="auth-layout__footer">
       <div className="auth-layout__footer-columns">
         <div className="auth-layout__brand">
-          <Link className="auth-layout__logo" to="/" aria-label="Chạm Tech — Trang chủ"><img src={logo} alt="Chạm Tech" /></Link>
+          <Link className="auth-layout__logo" to="/" aria-label="Chạm Tech — Trang chủ">
+            <img src={logo} alt="Chạm Tech" />
+          </Link>
           <p>Thiết bị công nghệ &amp; phần cứng cao cấp. Trải nghiệm mua sắm rõ ràng, tinh tế.</p>
         </div>
         <nav className="auth-layout__support" aria-label="Hỗ trợ khách hàng">
@@ -21,9 +23,11 @@ function AuthFooter() {
           <p>Hỗ trợ thông tin sản phẩm và đơn hàng</p>
         </div>
       </div>
-      <div className="auth-layout__copyright"><span>© 2026 Chạm Tech</span><span>Thanh toán COD</span></div>
+      <div className="auth-layout__copyright">
+        <span>© 2026 Chạm Tech</span>
+      </div>
     </footer>
-  )
+  );
 }
 
-export default AuthFooter
+export default AuthFooter;

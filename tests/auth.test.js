@@ -1,13 +1,14 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { validateAuth } from '../src/features/customer/auth/authValidation.js'
+import { validateAuth, authErrorMessage } from '../src/features/customer/auth/authValidation.js'
 import { tokens } from '../src/api/tokenStore.js'
 
-const form = { username: 'test-user', password: 'password123', confirmPassword: 'password123', displayName: '' }
+const form = { email: 'user@example.com', password: 'password123', confirmPassword: 'password123', displayName: '' }
 
-test('registration validates confirmation, username and Unicode password limits', () => {
+test('registration validates confirmation, email and Unicode password limits', () => {
   assert.deepEqual(validateAuth(form, true), {})
-  assert.match(validateAuth({ ...form, username: 'a@b' }, true).username, /4–50/)
+  assert.match(validateAuth({ ...form, email: 'invalid-email' }, true).email, /hợp lệ/)
+  assert.match(validateAuth({ ...form, email: '' }, true).email, /nhập email/)
   assert.match(validateAuth({ ...form, confirmPassword: 'different' }, true).confirmPassword, /khớp/)
   const tooManyBytes = '😀'.repeat(19)
   assert.match(validateAuth({ ...form, password: tooManyBytes, confirmPassword: tooManyBytes }, true).password, /72/)
@@ -16,9 +17,16 @@ test('registration validates confirmation, username and Unicode password limits'
   assert.match(validateAuth({ ...form, displayName: 'x'.repeat(101) }, true).displayName, /100/)
 })
 
-test('login allows existing short passwords and email identifiers without changing password whitespace', () => {
-  assert.deepEqual(validateAuth({ ...form, username: 'user@example.com', password: ' x ' }, false), {})
-  assert.match(validateAuth({ ...form, username: '  ' }, false).username, /nhập/)
+test('login allows existing short passwords and email without changing password whitespace', () => {
+  assert.deepEqual(validateAuth({ ...form, email: 'user@example.com', password: ' x ' }, false), {})
+  assert.match(validateAuth({ ...form, email: '  ' }, false).email, /nhập/)
+  assert.match(validateAuth({ ...form, email: 'not-an-email' }, false).email, /hợp lệ/)
+})
+
+test('authErrorMessage returns localized friendly error messages', () => {
+  assert.match(authErrorMessage({ status: 401 }, false), /Email hoặc mật khẩu không đúng/)
+  assert.match(authErrorMessage({ status: 409 }, true), /Email đã được sử dụng/)
+  assert.match(authErrorMessage({ status: 429 }, false), /quá nhiều lần/)
 })
 
 test('remember preference survives refresh rotation and logout clears both stores', () => {

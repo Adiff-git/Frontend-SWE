@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import product from '../../../assets/auth/product.png';
 import AuthForm from './AuthForm';
 import { getSafeReturnDestination } from './navigation';
@@ -7,13 +7,11 @@ import './AuthScreen.css';
 function AuthScreen({ mode }) {
   const signup = mode === 'signup';
   const location = useLocation();
-  // Keep a safe internal destination when switching between the two forms.
   const destination = getSafeReturnDestination(location.state?.from, location.search);
 
   return (
     <section className="auth-screen" aria-label={signup ? 'Đăng ký tài khoản' : 'Đăng nhập tài khoản'}>
-      <aside className="auth-screen__context" aria-label="Tài khoản Chạm Tech">
-        <span className="auth-screen__badge">TÀI KHOẢN CHẠM TECH</span>
+      <aside className="auth-screen__context" aria-label="Ngữ cảnh tài khoản">
         <h2 className="auth-screen__headline">
           {signup ? (
             <>
@@ -28,9 +26,7 @@ function AuthScreen({ mode }) {
         <div className="auth-screen__product">
           <img src={product} alt="iPhone màu bạc" />
         </div>
-        <div className="auth-screen__context-bottom">
-          {!signup && <Link to="/cart">Xem giỏ hàng của bạn</Link>}
-        </div>
+        <div className="auth-screen__divider" />
       </aside>
       <AuthForm key={mode} signup={signup} destination={destination} />
     </section>

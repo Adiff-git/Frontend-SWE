@@ -29,7 +29,7 @@ test('POST /api/auth/register returns 201, token headers, and exact token body',
     const res = await fetch(`${url}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'newuser1', password: 'password123' }),
+      body: JSON.stringify({ email: 'newuser1@example.com', password: 'password123' }),
     });
 
     assert.equal(res.status, 201);
@@ -45,13 +45,13 @@ test('POST /api/auth/register returns 201, token headers, and exact token body',
   });
 });
 
-test('POST /api/auth/register checks case-insensitive username duplicates with 409', async () => {
+test('POST /api/auth/register checks case-insensitive username/email duplicates with 409', async () => {
   await withServer(async (url) => {
-    // chamtech_user is already seeded
+    // chamtech_user / tuananh@chamtech.vn is already seeded
     const res = await fetch(`${url}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'CHAMTECH_USER', password: 'password123' }),
+      body: JSON.stringify({ email: 'TUANANH@CHAMTECH.VN', password: 'password123' }),
     });
 
     assert.equal(res.status, 409);
