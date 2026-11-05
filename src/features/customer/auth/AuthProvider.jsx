@@ -112,7 +112,6 @@ export default function AuthProvider({ children }) {
 
   // 5. Actions
   const loginAction = useCallback(async (identifier, password, options = {}) => {
-    setIsCompletingAuth(true);
     const result = await apiLogin(identifier, password, options);
     setGeneration(result.generation);
     setHasStoredSession(true);
@@ -131,7 +130,6 @@ export default function AuthProvider({ children }) {
   }, [queryClient]);
 
   const registerAction = useCallback(async (username, password, options = {}) => {
-    setIsCompletingAuth(true);
     const result = await apiRegister(username, password, options);
     setGeneration(result.generation);
     setHasStoredSession(true);

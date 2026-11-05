@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import useAuth from '../../../hooks/useAuth';
 import { authErrorMessage, validateAuth } from './authValidation';
 
-export default function useAuthForm(signup) {
+export default function useAuthForm(signup, destination = '/') {
+  const navigate = useNavigate();
   const {
     login: ctxLogin,
     register: ctxRegister,
@@ -30,18 +32,25 @@ export default function useAuthForm(signup) {
   });
 
   const session = useMutation({
-    mutationFn: (form) =>
-      (signup ? ctxRegister : ctxLogin)(form.email.trim(), form.password, {
+    mutationFn: async (form) => {
+      const res = await (signup ? ctxRegister : ctxLogin)(form.email.trim(), form.password, {
         remember: form.remember,
-      }),
-    retry: false,
-    onSuccess: (_, form) => {
-      setAuthenticated(true);
-      setCompletingAuth(true);
-      setValues((current) => ({ ...current, password: '', confirmPassword: '' }));
+      });
       if (signup && form.displayName.trim()) {
-        profile.mutate(form.displayName.trim());
+        try {
+          await ctxUpdateProfile(form.displayName.trim());
+        } catch (err) {
+          console.error('Failed to update display name:', err);
+        }
       }
+      return res;
+    },
+    retry: false,
+    onSuccess: () => {
+      setAuthenticated(true);
+      if (setCompletingAuth) setCompletingAuth(false);
+      setValues((current) => ({ ...current, password: '', confirmPassword: '' }));
+      navigate(destination || '/', { replace: true });
     },
     onSettled: () => {
       submitLock.current = false;

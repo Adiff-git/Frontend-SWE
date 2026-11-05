@@ -7,7 +7,7 @@ import useAuthForm from './useAuthForm';
 import googleIcon from '../../../assets/auth/google.svg';
 
 function AuthForm({ signup, destination }) {
-  const form = useAuthForm(signup);
+  const form = useAuthForm(signup, destination);
   const successHeading = useRef(null);
 
   useEffect(() => {
@@ -31,30 +31,8 @@ function AuthForm({ signup, destination }) {
           <h1 ref={successHeading} tabIndex={-1}>
             {signup ? 'Tạo tài khoản thành công' : 'Đăng nhập thành công'}
           </h1>
-          <p>Bạn đã đăng nhập. Tiếp tục khám phá sản phẩm tại Chạm Tech.</p>
+          <p>Đang chuyển hướng…</p>
         </div>
-        {form.profile.isPending && <p role="status">Đang lưu tên hiển thị…</p>}
-        {form.profile.isError && (
-          <div className="auth-form__notice" role="alert">
-            <p>
-              Tài khoản đã được tạo nhưng chưa lưu được tên hiển thị. Bạn có thể tiếp tục mua sắm
-              hoặc thử lưu lại.
-            </p>
-            <Button onClick={form.retryProfile}>Lưu lại tên hiển thị</Button>
-          </div>
-        )}
-        {form.profileBootstrapError && (
-          <div className="auth-form__notice" role="alert">
-            <p>
-              {form.profileBootstrapError.status === 403
-                ? 'Phiên làm việc đã tạo thành công nhưng tài khoản chưa được cấp quyền quản lý hồ sơ.'
-                : 'Phiên làm việc đã tạo thành công nhưng chưa thể tải hồ sơ do sự cố kết nối.'}
-            </p>
-            {form.profileBootstrapError.status !== 403 && (
-              <Button onClick={form.retryBootstrap}>Thử tải lại hồ sơ</Button>
-            )}
-          </div>
-        )}
         <Link
           className="auth-form__continue"
           to={destination}
