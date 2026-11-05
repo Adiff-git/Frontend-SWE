@@ -24,24 +24,30 @@ async function withServer(fn) {
   }
 }
 
-test('POST /api/auth/register returns 201, token headers, and exact token body', async () => {
+test('registration is pending until confirmation, rotates resend authority and issues tokens once', async () => {
   await withServer(async (url) => {
-    const res = await fetch(`${url}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'newuser1@example.com', password: 'password123' }),
-    });
-
-    assert.equal(res.status, 201);
-    const authHeader = res.headers.get('Authorization');
-    assert.match(authHeader || '', /^Bearer [0-9a-f]{64}$/);
-    assert.equal(res.headers.get('Cache-Control'), 'no-store');
-
-    const body = await res.json();
-    assert.equal(body.tokenType, 'Bearer');
-    assert.equal(typeof body.accessTokenExpiresIn, 'number');
-    assert.match(body.refreshToken, /^[0-9a-f]{64}$/);
-    assert.ok(Date.parse(body.refreshTokenExpiresAt) > Date.now());
+    const post = (path, body) => fetch(`${url}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const start = await post('/api/auth/register', { email: 'newuser1@example.com', password: 'password123' });
+    assert.equal(start.status, 202);
+    assert.equal(start.headers.get('Authorization'), null);
+    const first = await start.json();
+    const before = await post('/api/auth/login', { identifier: 'newuser1@example.com', password: 'password123' });
+    assert.equal(before.status, 401);
+    const resent = await post('/api/auth/registration-verifications/resend', { registrationCredential: first.registrationCredential, challengeId: first.challengeId });
+    assert.equal(resent.status, 202);
+    const pending = await resent.json();
+    assert.notEqual(pending.registrationCredential, first.registrationCredential);
+    const confirm = (proof, code = '000123') => post('/api/auth/registration-verifications/confirm', { registrationCredential: proof.registrationCredential, challengeId: proof.challengeId, code, password: 'chosen password' });
+    assert.equal((await confirm(first)).status, 400);
+    assert.equal((await confirm(pending, '111111')).status, 400);
+    const result = await confirm(pending);
+    assert.equal(result.status, 201);
+    assert.match(result.headers.get('Authorization'), /^Bearer /);
+    const body = await result.json();
+    assert.match(body.refreshToken, /^[A-Za-z0-9_-]{43}$/);
+    assert.deepEqual(Object.keys(body).sort(), ['accessTokenExpiresIn', 'refreshToken', 'refreshTokenExpiresAt', 'tokenType']);
+    assert.equal((await confirm(pending)).status, 400);
+    assert.equal((await post('/api/auth/login', { identifier: 'newuser1@example.com', password: 'chosen password' })).status, 200);
   });
 });
 
@@ -57,7 +63,7 @@ test('POST /api/auth/register checks case-insensitive username/email duplicates 
     assert.equal(res.status, 409);
     const body = await res.json();
     assert.equal(body.status, 409);
-    assert.match(body.message, /đã được sử dụng/);
+    assert.match(body.message, /exists/);
   });
 });
 
@@ -96,17 +102,23 @@ test('POST /api/auth/login accepts username and email, rejecting invalid credent
 test('POST /api/auth/login preserves password whitespace and rejects trimmed mismatch', async () => {
   await withServer(async (url) => {
     // Register user with password containing surrounding whitespace
-    await fetch(`${url}/api/auth/register`, {
+    const pendingResponse = await fetch(`${url}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'spaces_user', password: '  secret123  ' }),
+      body: JSON.stringify({ email: 'spaces@example.com', password: '  secret123  ' }),
     });
+    const pending = await pendingResponse.json();
+    const confirmed = await fetch(`${url}/api/auth/registration-verifications/confirm`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...pending, expiresAt: undefined, code: '000123', password: '  secret123  ' }),
+    });
+    assert.equal(confirmed.status, 201);
 
     // Login with exact whitespace matches
     const resOk = await fetch(`${url}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier: 'spaces_user', password: '  secret123  ' }),
+      body: JSON.stringify({ identifier: 'spaces@example.com', password: '  secret123  ' }),
     });
     assert.equal(resOk.status, 200);
 
@@ -114,7 +126,7 @@ test('POST /api/auth/login preserves password whitespace and rejects trimmed mis
     const resFail = await fetch(`${url}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier: 'spaces_user', password: 'secret123' }),
+      body: JSON.stringify({ identifier: 'spaces@example.com', password: 'secret123' }),
     });
     assert.equal(resFail.status, 401);
   });
@@ -202,7 +214,7 @@ test('POST /api/auth/refresh rotates token and single-use invalidates consumed t
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier: 'demo_user', password: 'password123' }),
     });
-    const { refreshToken: firstRefresh } = await loginRes.json();
+    const { refreshToken: firstRefresh, refreshTokenExpiresAt: deadline } = await loginRes.json();
 
     // First refresh: succeeds
     const refreshRes1 = await fetch(`${url}/api/auth/refresh`, {
@@ -211,8 +223,9 @@ test('POST /api/auth/refresh rotates token and single-use invalidates consumed t
       body: JSON.stringify({ refreshToken: firstRefresh }),
     });
     assert.equal(refreshRes1.status, 200);
-    const { refreshToken: secondRefresh } = await refreshRes1.json();
+    const { refreshToken: secondRefresh, refreshTokenExpiresAt: rotatedDeadline } = await refreshRes1.json();
     assert.notEqual(firstRefresh, secondRefresh);
+    assert.equal(rotatedDeadline, deadline);
 
     // Reuse consumed refresh token: fails with 401
     const refreshResReuse = await fetch(`${url}/api/auth/refresh`, {
@@ -221,6 +234,11 @@ test('POST /api/auth/refresh rotates token and single-use invalidates consumed t
       body: JSON.stringify({ refreshToken: firstRefresh }),
     });
     assert.equal(refreshResReuse.status, 401);
+    const descendant = await fetch(`${url}/api/auth/refresh`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: secondRefresh }),
+    });
+    assert.equal(descendant.status, 401);
   });
 });
 
