@@ -1,6 +1,6 @@
 import { tokens } from './tokenStore.js';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || (globalThis.process?.env?.VITE_API_URL);
 
 export class ApiError extends Error {
   constructor(status, message, data) {
@@ -70,9 +70,10 @@ async function request(path, { method = 'GET', body, params, headers, auth = tru
   let res = await send(url, { method, body, headers, auth, signal });
 
   if (res.status === 401 && auth && tokens.hasSession()) {
+    const capturedGen = tokens.getGeneration();
     await refreshSession(); // throws if the session is really dead
     res = await send(url, { method, body, headers, auth, signal }); // retry once
-    if (res.status === 401) {
+    if (res.status === 401 && capturedGen === tokens.getGeneration()) {
       tokens.clear();
       onSessionExpired();
     }
@@ -127,8 +128,10 @@ export function refreshSession() {
 
     if (res.status === 401) {
       // Only a real 401 means the session is dead. 409 (retry) / 500 / network: keep the tokens.
-      tokens.clear();
-      onSessionExpired();
+      if (capturedGen === tokens.getGeneration()) {
+        tokens.clear();
+        onSessionExpired();
+      }
     }
     if (!res.ok) throw toError(res, data);
 

@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { validateAuth, authErrorMessage } from '../src/features/customer/auth/authValidation.js'
 import { tokens } from '../src/api/tokenStore.js'
+import { refreshSession, setSessionExpiredHandler } from '../src/api/client.js'
 
 const form = { email: 'user@example.com', password: 'password123', confirmPassword: 'password123', displayName: '' }
 
@@ -51,3 +52,87 @@ test('remember preference survives refresh rotation and logout clears both store
   assert.equal(tokens.getAccess(), null)
   assert.equal(tokens.getRefresh(), null)
 })
+
+test('stale refresh rejection (401) does not clear newer session or trigger onSessionExpired', async () => {
+  const originalFetch = globalThis.fetch
+  const storage = () => {
+    const entries = new Map()
+    return { getItem: (key) => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, value), removeItem: (key) => entries.delete(key) }
+  }
+  globalThis.localStorage = storage()
+  globalThis.sessionStorage = storage()
+
+  let expiredCalled = false
+  setSessionExpiredHandler(() => { expiredCalled = true })
+
+  // 1. Set up session 1
+  tokens.clear()
+  tokens.setRefresh('old-refresh-token', false)
+  tokens.setAccess('old-access-token')
+
+  // 2. Start refresh with deferred response
+  let resolveRefresh
+  globalThis.fetch = () =>
+    new Promise((resolve) => {
+      resolveRefresh = resolve
+    })
+
+  const refreshPromise = refreshSession()
+
+  // 3. User logs in with a new session while refresh is pending
+  tokens.clear()
+  tokens.setRefresh('new-refresh-token', false)
+  tokens.setAccess('new-access-token')
+
+  // 4. Old refresh arrives with 401
+  resolveRefresh({
+    status: 401,
+    ok: false,
+    statusText: 'Unauthorized',
+    json: async () => ({ message: 'Old token expired' }),
+  })
+
+  await assert.rejects(refreshPromise)
+
+  // 5. Verify newer session is intact and expired handler was not triggered
+  assert.equal(tokens.getAccess(), 'new-access-token')
+  assert.equal(tokens.getRefresh(), 'new-refresh-token')
+  assert.equal(tokens.hasSession(), true)
+  assert.equal(expiredCalled, false)
+
+  globalThis.fetch = originalFetch
+})
+
+test('legitimate refresh rejection (401) clears matching session and triggers onSessionExpired', async () => {
+  const originalFetch = globalThis.fetch
+  const storage = () => {
+    const entries = new Map()
+    return { getItem: (key) => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, value), removeItem: (key) => entries.delete(key) }
+  }
+  globalThis.localStorage = storage()
+  globalThis.sessionStorage = storage()
+
+  let expiredCalled = false
+  setSessionExpiredHandler(() => { expiredCalled = true })
+
+  tokens.clear()
+  tokens.setRefresh('active-refresh-token', false)
+  tokens.setAccess('active-access-token')
+
+  globalThis.fetch = async () => ({
+    status: 401,
+    ok: false,
+    statusText: 'Unauthorized',
+    json: async () => ({ message: 'Session expired' }),
+  })
+
+  await assert.rejects(refreshSession())
+
+  assert.equal(tokens.hasSession(), false)
+  assert.equal(tokens.getAccess(), null)
+  assert.equal(tokens.getRefresh(), null)
+  assert.equal(expiredCalled, true)
+
+  globalThis.fetch = originalFetch
+})
+
