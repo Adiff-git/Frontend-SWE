@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import useLogoutConfirmation from '../features/customer/account/useLogoutConfirmation';
 import logo from '../assets/auth/logo.png';
 import grid from '../assets/auth/grid.svg';
 import search from '../assets/auth/search.svg';
@@ -11,7 +12,8 @@ import './Header.css';
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, status, logout, retryBootstrap } = useAuth();
+  const { user, status, retryBootstrap } = useAuth();
+  const { requestLogout } = useLogoutConfirmation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const triggerRef = useRef(null);
@@ -55,10 +57,9 @@ export default function Header() {
     navigate(query ? `/products?q=${encodeURIComponent(query)}` : '/products');
   }
 
-  async function handleLogout() {
+  function handleLogout() {
     setDropdownOpen(false);
-    await logout();
-    navigate('/');
+    requestLogout();
   }
 
   const displayName = user?.displayName || user?.username || 'Tài khoản';
@@ -190,6 +191,13 @@ export default function Header() {
                   onClick={() => setDropdownOpen(false)}
                 >
                   Đơn mua của tôi
+                </Link>
+                <Link
+                  to="/profile/addresses"
+                  className="header__dropdown-item"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Sổ địa chỉ nhận hàng
                 </Link>
                 <div className="header__dropdown-divider" />
                 <button
