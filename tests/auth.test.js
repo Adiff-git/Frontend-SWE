@@ -21,7 +21,7 @@ test('registration validates confirmation, email and Unicode password limits', (
 test('login allows existing short passwords and email without changing password whitespace', () => {
   assert.deepEqual(validateAuth({ ...form, email: 'user@example.com', password: ' x ' }, false), {})
   assert.match(validateAuth({ ...form, email: '  ' }, false).email, /nhập/)
-  assert.match(validateAuth({ ...form, email: 'not-an-email' }, false).email, /hợp lệ/)
+  assert.deepEqual(validateAuth({ ...form, email: 'legacy_username' }, false), {})
 })
 
 test('authErrorMessage returns localized friendly error messages', () => {

@@ -8,6 +8,8 @@ export default function GuestRoute() {
   const { status, error, isCompletingAuth, retryBootstrap, logout } = useAuth();
   const location = useLocation();
 
+  if (isCompletingAuth) return <Outlet />;
+
   if (status === 'checking') {
     return (
       <div className="route-guard route-guard--loading" role="status" aria-live="polite">

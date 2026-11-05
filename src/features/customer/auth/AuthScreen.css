@@ -201,6 +201,19 @@
   background: var(--color-success-subtle);
 }
 
+.auth-form__notice--logged-out {
+  display: flex;
+  align-items: center;
+  gap: var(--space-10);
+  background: #eaf7f0;
+  color: #16804a;
+  padding: 12px 16px;
+  border-radius: var(--radius-8);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-13);
+  font-weight: var(--font-weight-medium);
+}
+
 .auth-form__notice--success h1 {
   color: var(--color-success);
   font-size: var(--font-size-28);

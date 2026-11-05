@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Button from '../../../components/Button';
 import FormField from '../../../components/FormField';
 import PasswordField from './PasswordField';
 import useAuthForm from './useAuthForm';
 import googleIcon from '../../../assets/auth/google.svg';
+import circleCheckIcon from '../../../assets/account/circle-check.svg';
 
 function AuthForm({ signup, destination }) {
   const form = useAuthForm(signup, destination);
+  const location = useLocation();
   const successHeading = useRef(null);
 
   useEffect(() => {
@@ -32,7 +34,9 @@ function AuthForm({ signup, destination }) {
             {signup ? 'Tạo tài khoản thành công' : 'Đăng nhập thành công'}
           </h1>
           <p>Đang chuyển hướng…</p>
+          {form.completionError && <p role="alert">{form.completionError}</p>}
         </div>
+        {form.completionError && <Button onClick={form.retryProfile} loading={form.pending}>Thử lưu tên lại</Button>}
         <Link
           className="auth-form__continue"
           to={destination}
@@ -48,6 +52,19 @@ function AuthForm({ signup, destination }) {
     <div className="auth-form">
       {!signup && <p className="auth-form__eyebrow">CHÀO MỪNG TRỞ LẠI</p>}
       <h1>{title}</h1>
+      {form.pendingRegistration && <div className="auth-form__notice" role="status">
+        <p>Kiểm tra email {form.values.email} để nhận mã xác nhận. Tài khoản chỉ được tạo sau khi xác nhận thành công.</p>
+        <p>Mã hết hạn lúc {new Date(form.pendingRegistration.expiresAt).toLocaleString('vi-VN')}. Nhập lại mật khẩu bạn muốn sử dụng để hoàn tất.</p>
+        <Button variant="secondary" onClick={form.resend} disabled={form.pending}>Gửi lại mã</Button>
+        <Button variant="secondary" onClick={form.restart} disabled={form.pending}>Đổi email / bắt đầu lại</Button>
+      </div>}
+      {!signup && location.state?.loggedOut && (
+        <div className="auth-form__notice auth-form__notice--logged-out" role="status">
+          <img src={circleCheckIcon} alt="" width="18" height="18" />
+          <span>Bạn đã đăng xuất thành công.</span>
+        </div>
+      )}
+      {!signup && location.state?.passwordChanged && <p role="status">Mật khẩu đã cập nhật. Vui lòng đăng nhập lại.</p>}
       <form
         className={`auth-form__fields${signup ? ' auth-form__fields--signup' : ''}`}
         onSubmit={form.submit}
@@ -64,15 +81,17 @@ function AuthForm({ signup, destination }) {
         )}
         <FormField
           {...fieldProps('email')}
-          label="Email"
-          placeholder={signup ? 'bạn@example.com' : 'Nhập email'}
-          type="email"
-          autoComplete="email"
+          label={signup ? 'Email' : 'Email hoặc tên đăng nhập'}
+          placeholder={signup ? 'bạn@example.com' : 'Nhập email hoặc tên đăng nhập'}
+          type={signup ? 'email' : 'text'}
+          autoComplete={signup ? 'email' : 'username'}
+          readOnly={Boolean(form.pendingRegistration)}
           autoCapitalize="none"
           spellCheck={false}
           required
           hint={signup ? 'Ví dụ: bạn@example.com' : undefined}
         />
+        {form.pendingRegistration && <FormField {...fieldProps('code')} label="Mã xác nhận" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required />}
         <PasswordField
           {...fieldProps('password')}
           label="Mật khẩu"
@@ -109,13 +128,13 @@ function AuthForm({ signup, destination }) {
           </div>
         )}
         <Button type="submit" loading={form.pending}>
-          {form.pending ? 'Đang xử lý…' : signup ? 'Đăng ký' : 'Đăng nhập'}
+          {form.pending ? 'Đang xử lý…' : form.pendingRegistration ? 'Xác nhận và tạo tài khoản' : signup ? 'Đăng ký' : 'Đăng nhập'}
         </Button>
         <button
           type="button"
           className="auth-form__google-btn"
           disabled={form.pending}
-          onClick={() => alert('Đăng nhập bằng Google sẽ sớm khả dụng.')}
+          onClick={form.google}
         >
           <img src={googleIcon} alt="" width="18" height="18" />
           <span>{signup ? 'Tiếp tục bằng Google' : 'Đăng nhập bằng Google'}</span>

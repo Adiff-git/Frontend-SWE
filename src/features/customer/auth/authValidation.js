@@ -8,7 +8,7 @@ export function validateAuth(values, signup) {
 
   if (!email) {
     errors.email = 'Vui lòng nhập email.';
-  } else if (!EMAIL_REGEX.test(email)) {
+  } else if (signup && !EMAIL_REGEX.test(email)) {
     errors.email = 'Email không hợp lệ. Ví dụ: bạn@example.com';
   } else if (length(email) > 254) {
     errors.email = 'Email quá dài.';
@@ -34,6 +34,9 @@ export function validateAuth(values, signup) {
 }
 
 export function authErrorMessage(error, signup) {
+  if (error.code === 'ACCOUNT_CONNECTION_REQUIRED') return 'Hãy đăng nhập tài khoản hiện có rồi liên kết Google trong hồ sơ.';
+  if (error.code === 'EMAIL_VERIFICATION_REQUIRED') return 'Vui lòng xác thực email để hoàn tất thao tác.';
+  if (error.code === 'SESSION_RECOVERY_REQUIRED' || error.code === 'SESSION_CHANGED') return 'Phiên đăng nhập cần được xác nhận lại. Vui lòng đăng nhập.';
   if (error.status === 401) return 'Email hoặc mật khẩu không đúng. Vui lòng thử lại.';
   if (error.status === 409 && signup) return 'Email đã được sử dụng hoặc yêu cầu đang xung đột. Vui lòng kiểm tra lại.';
   if (error.status === 429) return 'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';

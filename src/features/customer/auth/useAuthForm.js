@@ -1,106 +1,109 @@
-import { useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import useAuth from '../../../hooks/useAuth';
+import { resendRegistration } from '../../../api/auth';
 import { authErrorMessage, validateAuth } from './authValidation';
+import { beginGoogle } from './googleFlow';
 
 export default function useAuthForm(signup, destination = '/') {
+  const auth = useAuth();
   const navigate = useNavigate();
-  const {
-    login: ctxLogin,
-    register: ctxRegister,
-    updateProfile: ctxUpdateProfile,
-    retryBootstrap,
-    setCompletingAuth,
-  } = useAuth();
-
-  const [values, setValues] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    displayName: '',
-    remember: false,
-  });
-  const [touched, setTouched] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [values, setValues] = useState({ email: '', password: '', confirmPassword: '', displayName: '', remember: false, code: '' });
+  const [pendingRegistration, setPendingRegistration] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState(null);
   const [authenticated, setAuthenticated] = useState(false);
-  const submitLock = useRef(false);
+  const [completionError, setCompletionError] = useState(null);
+  const lock = useRef(false);
+  const { setCompletingAuth } = auth;
+  useEffect(() => () => setCompletingAuth(false), [setCompletingAuth]);
 
-  const profile = useMutation({
-    mutationFn: (displayName) => ctxUpdateProfile(displayName),
-    retry: false,
-  });
+  function finish() {
+    auth.setCompletingAuth(false);
+    navigate(destination, { replace: true });
+  }
 
-  const session = useMutation({
-    mutationFn: async (form) => {
-      const res = await (signup ? ctxRegister : ctxLogin)(form.email.trim(), form.password, {
-        remember: form.remember,
-      });
-      if (signup && form.displayName.trim()) {
-        try {
-          await ctxUpdateProfile(form.displayName.trim());
-        } catch (err) {
-          console.error('Failed to update display name:', err);
+  const mutation = useMutation({
+    gcTime: 0, retry: false,
+    mutationFn: async (action) => {
+      setError(null);
+      if (action === 'google') {
+        await beginGoogle({ destination, remember: values.remember });
+        return;
+      }
+      if (action === 'resend') {
+        try { setPendingRegistration(await resendRegistration(pendingRegistration)); }
+        catch (failure) {
+          if (failure.status === 0 || failure.status >= 500) setPendingRegistration(null);
+          throw failure;
+        }
+        return;
+      }
+      if (signup && !pendingRegistration && !authenticated) {
+        setPendingRegistration(await auth.register(values.email.trim(), values.password));
+        return;
+      }
+      if (!authenticated) {
+        auth.setCompletingAuth(true);
+        const result = signup
+          ? await auth.confirmSignup(pendingRegistration, values.code, values.password, { remember: values.remember })
+          : await auth.login(values.email.trim(), values.password, { remember: values.remember });
+        setAuthenticated(true);
+        setPendingRegistration(null);
+        if (result.profileError) {
+          setCompletionError('Đã đăng nhập nhưng chưa tải được hồ sơ. Bạn có thể thử tải lại ở trang tiếp theo.');
+          return;
         }
       }
-      return res;
+      if (signup && values.displayName.trim()) {
+        try { await auth.updateProfile(values.displayName.trim()); }
+        catch {
+          setCompletionError('Tài khoản đã tạo thành công nhưng chưa lưu được tên hiển thị. Bạn có thể thử lại hoặc cập nhật sau trong hồ sơ.');
+          return;
+        }
+      }
+      finish();
     },
-    retry: false,
-    onSuccess: () => {
-      setAuthenticated(true);
-      if (setCompletingAuth) setCompletingAuth(false);
-      setValues((current) => ({ ...current, password: '', confirmPassword: '' }));
-      navigate(destination || '/', { replace: true });
+    onError: (failure) => {
+      auth.setCompletingAuth(false);
+      setErrors(Object.fromEntries(Object.entries(failure.fieldErrors || {}).map(([key, message]) => [key === 'identifier' ? 'email' : key, Array.isArray(message) ? message[0] : message])));
+      setError(failure.code === 'CONTRACT_MISMATCH' ? 'Máy chủ chưa hỗ trợ phiên bản đăng ký yêu cầu.' : authErrorMessage(failure, signup));
+      if (pendingRegistration && (failure.status === 0 || failure.status >= 500)) {
+        setError('Chưa xác định được kết quả xác nhận. Hãy thử đăng nhập trước khi đăng ký lại; mã đã gửi có thể đã được sử dụng.');
+        setPendingRegistration(null);
+      }
     },
     onSettled: () => {
-      submitLock.current = false;
+      lock.current = false;
+      setValues((current) => ({ ...current, password: '', confirmPassword: '', code: '' }));
     },
   });
 
-  const validation = validateAuth(values, signup);
-  const errors = Object.fromEntries(
-    Object.entries(validation).filter(([name]) => submitted || touched[name]),
-  );
-
-  for (const [field, messages] of Object.entries(session.error?.fieldErrors || {})) {
-    const name = field === 'identifier' || field === 'username' ? 'email' : field;
-    if (Array.isArray(messages) && typeof messages[0] === 'string') {
-      errors[name] = messages[0];
-    }
+  function run(action) {
+    if (lock.current) return;
+    lock.current = true;
+    mutation.mutate(action);
   }
-
-  function change(event) {
-    const { name, type, checked, value } = event.target;
-    setValues((current) => ({ ...current, [name]: type === 'checkbox' ? checked : value }));
-    if (session.isError) session.reset();
-  }
-
   function submit(event) {
     event.preventDefault();
-    if (submitLock.current || authenticated) return;
-    setSubmitted(true);
-    if (Object.keys(validation).length) {
-      const name = Object.keys(validation)[0];
-      event.currentTarget.elements.namedItem(name)?.focus();
-      return;
-    }
-    submitLock.current = true;
-    session.mutate(values);
+    const validation = validateAuth(values, signup);
+    if (pendingRegistration && !/^[0-9]{6}$/.test(values.code)) validation.code = 'Nhập đủ 6 chữ số trong email.';
+    setErrors(validation);
+    if (!Object.keys(validation).length) run('submit');
   }
-
   return {
-    values,
-    errors,
-    authenticated,
-    profile,
-    profileBootstrapError: session.data?.profileError,
-    pending: session.isPending,
-    error: session.error && authErrorMessage(session.error, signup),
-    change,
-    submit,
-    blur: (event) => setTouched((current) => ({ ...current, [event.target.name]: true })),
-    retryProfile: () => profile.mutate(values.displayName.trim()),
-    retryBootstrap,
-    finishCompletion: () => setCompletingAuth(false),
+    values, errors, error, authenticated, completionError, pendingRegistration,
+    pending: mutation.isPending, submit,
+    change: (event) => {
+      const { name, type, value, checked } = event.target;
+      setValues((current) => ({ ...current, [name]: type === 'checkbox' ? checked : value }));
+      setErrors((current) => ({ ...current, [name]: undefined }));
+      setError(null);
+    },
+    blur: () => {},
+    resend: () => run('resend'), google: () => run('google'),
+    restart: () => { setPendingRegistration(null); setError(null); setErrors({}); },
+    retryProfile: () => run('profile'), finishCompletion: finish,
   };
 }
