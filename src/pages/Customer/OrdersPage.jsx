@@ -1,10 +1,5 @@
-function OrdersPage() {
-  return (
-    <>
-      <h1>Orders</h1>
-      <p>Placeholder for the customer's order history.</p>
-    </>
-  )
-}
+import OrdersScreen from '../../features/customer/orders/OrdersScreen';
 
-export default OrdersPage
+export default function OrdersPage() {
+  return <OrdersScreen />;
+}
