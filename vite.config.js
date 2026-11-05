@@ -6,7 +6,8 @@ import { mockApiPlugin } from './dev/mockApiPlugin.js'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const enableMock = env.VITE_ENABLE_MOCK === 'true'
+  const liveApiMode = mode === 'api'
+  const enableMock = !liveApiMode && env.VITE_ENABLE_MOCK === 'true'
   const hasApiUrl = Boolean(env.VITE_API_URL && env.VITE_API_URL.trim() !== '')
 
   if (enableMock && hasApiUrl) {
@@ -17,6 +18,10 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    define: liveApiMode ? {
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL || 'http://localhost:8080'),
+      'import.meta.env.VITE_ENABLE_MOCK': JSON.stringify('false'),
+    } : {},
     plugins: [react(), ...(enableMock ? [mockApiPlugin()] : [])],
     server: {
       watch: {

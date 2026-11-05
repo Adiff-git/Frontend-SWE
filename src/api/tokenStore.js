@@ -3,6 +3,8 @@
 let accessToken = null;
 let currentGeneration = 1;
 const KEY = 'refreshToken';
+let deadline = null;
+let sessionMarker = null;
 
 export const tokens = {
   getGeneration: () => currentGeneration,
@@ -10,6 +12,17 @@ export const tokens = {
     currentGeneration += 1;
     return currentGeneration;
   },
+  getDeadline: () => deadline,
+  setDeadline: (value) => { deadline = value || null; },
+  getSessionMarker: () => sessionMarker || globalThis.sessionStorage?.getItem('authSessionMarker') || globalThis.localStorage?.getItem('authSessionMarker'),
+  setSessionMarker: (value, remember = tokens.isRemembered()) => {
+    sessionMarker = value;
+    const target = remember ? globalThis.localStorage : globalThis.sessionStorage;
+    const other = remember ? globalThis.sessionStorage : globalThis.localStorage;
+    target?.setItem('authSessionMarker', value);
+    other?.removeItem('authSessionMarker');
+  },
+  syncExternal: () => { accessToken = null; sessionMarker = null; currentGeneration += 1; },
   getAccess: () => accessToken,
   setAccess: (t) => {
     accessToken = t || null;
@@ -53,6 +66,11 @@ export const tokens = {
   clear() {
     currentGeneration += 1;
     accessToken = null;
+    deadline = null;
+    sessionMarker = null;
+    globalThis.localStorage?.removeItem('authSessionMarker');
+    globalThis.sessionStorage?.removeItem('authSessionMarker');
+    globalThis.sessionStorage?.removeItem('googleFlow');
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(KEY);
     }
