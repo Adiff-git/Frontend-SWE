@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { validateAuth, authErrorMessage } from '../src/features/customer/auth/authValidation.js'
+import { validateAuth, authErrorMessage, googleAuthErrorMessage } from '../src/features/customer/auth/authValidation.js'
 import { tokens } from '../src/api/tokenStore.js'
 import { refreshSession, setSessionExpiredHandler } from '../src/api/client.js'
 
@@ -28,6 +28,18 @@ test('authErrorMessage returns localized friendly error messages', () => {
   assert.match(authErrorMessage({ status: 401 }, false), /Email hoặc mật khẩu không đúng/)
   assert.match(authErrorMessage({ status: 409 }, true), /Email đã được sử dụng/)
   assert.match(authErrorMessage({ status: 429 }, false), /quá nhiều lần/)
+})
+
+test('Google initiation failures do not blame password credentials and preserve actionable errors', () => {
+  for (const status of [400, 401, 403, 404, 503]) {
+    assert.match(googleAuthErrorMessage({ status }), /Chưa thể đăng nhập bằng Google/)
+    assert.doesNotMatch(googleAuthErrorMessage({ status }), /mật khẩu không đúng/)
+  }
+  assert.match(googleAuthErrorMessage({ status: 409, code: 'ACCOUNT_CONNECTION_REQUIRED' }), /liên kết Google/)
+  assert.match(googleAuthErrorMessage({ status: 409, code: 'SESSION_CHANGED' }), /Phiên đăng nhập/)
+  assert.match(googleAuthErrorMessage({ status: 0 }), /Không thể kết nối/)
+  assert.match(googleAuthErrorMessage({ status: 0 }), /Chưa thể đăng nhập bằng Google/)
+  assert.match(authErrorMessage({ status: 401 }, false), /Email hoặc mật khẩu không đúng/)
 })
 
 test('remember preference survives refresh rotation and logout clears both stores', () => {

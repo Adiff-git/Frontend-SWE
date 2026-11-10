@@ -48,3 +48,13 @@ export function authErrorMessage(error, signup) {
   if (error.status === 400) return 'Thông tin chưa hợp lệ. Vui lòng kiểm tra các trường bên dưới.';
   return 'Hiện chưa thể xử lý yêu cầu. Vui lòng thử lại sau.';
 }
+
+export function googleAuthErrorMessage(error) {
+  if (['ACCOUNT_CONNECTION_REQUIRED', 'SESSION_RECOVERY_REQUIRED', 'SESSION_CHANGED'].includes(error.code)) {
+    return authErrorMessage(error, false);
+  }
+  if (error.status === 0) {
+    return 'Chưa thể đăng nhập bằng Google. Không thể kết nối dịch vụ xác thực; vui lòng thử lại hoặc đăng nhập bằng email và mật khẩu.';
+  }
+  return 'Chưa thể đăng nhập bằng Google. Bạn có thể đăng nhập bằng email hoặc tên đăng nhập và mật khẩu, hoặc thử lại sau.';
+}

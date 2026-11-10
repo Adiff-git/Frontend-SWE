@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import useAuth from '../../../hooks/useAuth';
 import { resendRegistration } from '../../../api/auth';
-import { authErrorMessage, validateAuth } from './authValidation';
+import { authErrorMessage, googleAuthErrorMessage, validateAuth } from './authValidation';
 import { beginGoogle } from './googleFlow';
 
 export default function useAuthForm(signup, destination = '/') {
@@ -65,11 +65,12 @@ export default function useAuthForm(signup, destination = '/') {
       }
       finish();
     },
-    onError: (failure) => {
+    onError: (failure, action) => {
       auth.setCompletingAuth(false);
       setErrors(Object.fromEntries(Object.entries(failure.fieldErrors || {}).map(([key, message]) => [key === 'identifier' ? 'email' : key, Array.isArray(message) ? message[0] : message])));
-      setError(failure.code === 'CONTRACT_MISMATCH' ? 'Máy chủ chưa hỗ trợ phiên bản đăng ký yêu cầu.' : authErrorMessage(failure, signup));
-      if (pendingRegistration && (failure.status === 0 || failure.status >= 500)) {
+      setError(action === 'google' ? googleAuthErrorMessage(failure)
+        : failure.code === 'CONTRACT_MISMATCH' ? 'Máy chủ chưa hỗ trợ phiên bản đăng ký yêu cầu.' : authErrorMessage(failure, signup));
+      if (action !== 'google' && pendingRegistration && (failure.status === 0 || failure.status >= 500)) {
         setError('Chưa xác định được kết quả xác nhận. Hãy thử đăng nhập trước khi đăng ký lại; mã đã gửi có thể đã được sử dụng.');
         setPendingRegistration(null);
       }
