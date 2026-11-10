@@ -15,7 +15,7 @@ export default function Header() {
   const { user, status, retryBootstrap } = useAuth();
   const { requestLogout } = useLogoutConfirmation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [imgError, setImgError] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState(null);
   const triggerRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -145,12 +145,12 @@ export default function Header() {
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
               <img
-                src={!imgError && user?.avatarUrl ? user.avatarUrl : userIcon}
+                src={user?.profileImageUrl && user.profileImageUrl !== failedImageUrl ? user.profileImageUrl : userIcon}
                 alt=""
                 width="18"
                 height="18"
                 className="header__avatar"
-                onError={() => setImgError(true)}
+                onError={() => setFailedImageUrl(user?.profileImageUrl)}
               />
               <span className="header__account-name">{displayName}</span>
               <svg
