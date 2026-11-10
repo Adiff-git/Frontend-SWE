@@ -36,6 +36,5 @@ build/
 .DS_Store
 Thumbs.db
 
-agents/
-docs/
 Agents.md
+tasks/
