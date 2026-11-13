@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import CustomerLayout from './components/CustomerLayout';
 import AuthLayout from './components/AuthLayout';
+import SignupSessionCleanup from './features/customer/auth/SignupSessionCleanup';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
 import AdminBoundary from './components/AdminBoundary';
@@ -17,6 +18,7 @@ import CheckoutPage from './pages/Customer/CheckoutPage';
 import NotFoundPage from './pages/Customer/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
 import SignupPage from './pages/Auth/SignupPage';
+import SignupVerifyPage from './pages/Auth/SignupVerifyPage';
 import ForgotPassPage from './pages/Auth/ForgotPassPage';
 import ResetPassPage from './pages/Auth/ResetPassPage';
 import GoogleCallbackPage from './pages/Auth/GoogleCallbackPage';
@@ -24,6 +26,7 @@ import GoogleCallbackPage from './pages/Auth/GoogleCallbackPage';
 function App({ googleCallback }) {
   return (
     <LogoutConfirmationProvider>
+      <SignupSessionCleanup />
       <Routes>
         <Route path="/auth/google/callback" element={<GoogleCallbackPage callback={googleCallback} />} />
         <Route path="/auth/google/error" element={<GoogleCallbackPage callback={googleCallback} />} />
@@ -32,6 +35,9 @@ function App({ googleCallback }) {
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/signup/verify" element={<SignupVerifyPage />} />
+            <Route path="/register" element={<Navigate to="/signup" replace />} />
+            <Route path="/register/verify" element={<Navigate to="/signup/verify" replace />} />
             <Route path="/login/forget" element={<ForgotPassPage />} />
             <Route path="/login/reset" element={<ResetPassPage />} />
           </Route>

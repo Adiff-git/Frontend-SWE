@@ -26,6 +26,7 @@ test('getSafeReturnDestination rejects external, protocol-relative, backslash an
 test('getSafeReturnDestination prevents auth redirect loops and unavailable admin routes', () => {
   assert.equal(getSafeReturnDestination('/login'), '/');
   assert.equal(getSafeReturnDestination('/signup'), '/');
+  assert.equal(getSafeReturnDestination('/signup/verify'), '/');
   assert.equal(getSafeReturnDestination('/login/forget'), '/');
   assert.equal(getSafeReturnDestination('/login/reset'), '/');
   assert.equal(getSafeReturnDestination('/admin'), '/');

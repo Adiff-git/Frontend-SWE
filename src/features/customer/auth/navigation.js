@@ -49,7 +49,7 @@ export function getSafeReturnDestination(from, search) {
   }
 
   // Avoid auth-route redirect loops
-  const authRoutes = ['/login', '/signup', '/login/forget', '/login/reset', '/auth/google/callback', '/auth/google/error'];
+  const authRoutes = ['/login', '/signup', '/signup/verify', '/login/forget', '/login/reset', '/auth/google/callback', '/auth/google/error'];
   if (authRoutes.includes(pathname)) {
     return '/';
   }
