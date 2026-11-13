@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Button from '../../../components/Button';
 import FormField from '../../../components/FormField';
@@ -11,6 +11,44 @@ function AuthForm({ signup, destination }) {
   const form = useAuthForm(signup, destination);
   const location = useLocation();
   const successHeading = useRef(null);
+
+  const [flashMessage, setFlashMessage] = useState(() => {
+    if (signup) return null;
+    if (location.state?.loggedOut) return 'loggedOut';
+    if (location.state?.passwordChanged) return 'passwordChanged';
+    return null;
+  });
+
+  useEffect(() => {
+    if (!flashMessage) return;
+
+    try {
+      window.history.replaceState({}, '');
+    } catch {
+      // ignore
+    }
+
+    const timer = setTimeout(() => {
+      setFlashMessage(null);
+    }, 4000);
+
+    function handleInteraction(e) {
+      if (e.target.closest?.('.auth-form__notice--logged-out')) return;
+      setFlashMessage(null);
+    }
+
+    const interactionTimeout = setTimeout(() => {
+      document.addEventListener('pointerdown', handleInteraction);
+      document.addEventListener('keydown', handleInteraction);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(interactionTimeout);
+      document.removeEventListener('pointerdown', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+  }, [flashMessage]);
 
   useEffect(() => {
     if (form.authenticated) successHeading.current?.focus();
@@ -52,19 +90,18 @@ function AuthForm({ signup, destination }) {
     <div className="auth-form">
       {!signup && <p className="auth-form__eyebrow">CHÀO MỪNG TRỞ LẠI</p>}
       <h1>{title}</h1>
-      {form.pendingRegistration && <div className="auth-form__notice" role="status">
-        <p>Kiểm tra email {form.values.email} để nhận mã xác nhận. Tài khoản chỉ được tạo sau khi xác nhận thành công.</p>
-        <p>Mã hết hạn lúc {new Date(form.pendingRegistration.expiresAt).toLocaleString('vi-VN')}. Nhập lại mật khẩu bạn muốn sử dụng để hoàn tất.</p>
-        <Button variant="secondary" onClick={form.resend} disabled={form.pending}>Gửi lại mã</Button>
-        <Button variant="secondary" onClick={form.restart} disabled={form.pending}>Đổi email / bắt đầu lại</Button>
-      </div>}
-      {!signup && location.state?.loggedOut && (
+      {flashMessage === 'loggedOut' && (
         <div className="auth-form__notice auth-form__notice--logged-out" role="status">
           <img src={circleCheckIcon} alt="" width="18" height="18" />
           <span>Bạn đã đăng xuất thành công.</span>
         </div>
       )}
-      {!signup && location.state?.passwordChanged && <p role="status">Mật khẩu đã cập nhật. Vui lòng đăng nhập lại.</p>}
+      {flashMessage === 'passwordChanged' && (
+        <div className="auth-form__notice auth-form__notice--logged-out" role="status">
+          <img src={circleCheckIcon} alt="" width="18" height="18" />
+          <span>Mật khẩu đã cập nhật. Vui lòng đăng nhập lại.</span>
+        </div>
+      )}
       <form
         className={`auth-form__fields${signup ? ' auth-form__fields--signup' : ''}`}
         onSubmit={form.submit}
@@ -85,13 +122,11 @@ function AuthForm({ signup, destination }) {
           placeholder={signup ? 'bạn@example.com' : 'Nhập email hoặc tên đăng nhập'}
           type={signup ? 'email' : 'text'}
           autoComplete={signup ? 'email' : 'username'}
-          readOnly={Boolean(form.pendingRegistration)}
           autoCapitalize="none"
           spellCheck={false}
           required
           hint={signup ? 'Ví dụ: bạn@example.com' : undefined}
         />
-        {form.pendingRegistration && <FormField {...fieldProps('code')} label="Mã xác nhận" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required />}
         <PasswordField
           {...fieldProps('password')}
           label="Mật khẩu"
@@ -128,7 +163,7 @@ function AuthForm({ signup, destination }) {
           </div>
         )}
         <Button type="submit" loading={form.pending}>
-          {form.pending ? 'Đang xử lý…' : form.pendingRegistration ? 'Xác nhận và tạo tài khoản' : signup ? 'Đăng ký' : 'Đăng nhập'}
+          {form.pending ? 'Đang xử lý…' : signup ? 'Đăng ký' : 'Đăng nhập'}
         </Button>
         <button
           type="button"
