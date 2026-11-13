@@ -9,9 +9,12 @@ export function commitSession(result, remember, generation) {
   return { ...result, committed, generation };
 }
 
-export async function startSession(path, body, { remember = false, expectedStatus = 200 } = {}) {
+export async function startSession(path, body, { remember = false, expectedStatus = 200, isCurrent } = {}) {
   const generation = tokens.nextGeneration();
   const result = await api.post(path, body, { auth: false, withHeaders: true, expectedStatus });
+  if (isCurrent && !isCurrent()) {
+    throw new ApiError(409, 'The authentication flow was canceled.', { code: 'SESSION_CHANGED' });
+  }
   return commitSession(result, remember, generation);
 }
 
