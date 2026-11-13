@@ -94,7 +94,7 @@ export default function OrdersScreen() {
       <div className="orders-screen__fixture-notice">
         <img src={infoIcon} alt="" className="orders-screen__fixture-icon" width="18" height="18" />
         <p className="orders-screen__fixture-text">
-          <strong>Bản xem trước giao diện:</strong> Dữ liệu đơn hàng hiện tại là fixture minh họa giao diện theo thiết kế Figma; dịch vụ đơn hàng chính thức sẽ được kích hoạt sau khi thỏa thuận hợp đồng backend.
+          <strong>Bản xem trước giao diện:</strong> Dữ liệu đơn hàng mẫu đang trong quá trình phát triển backend.
         </p>
       </div>
 

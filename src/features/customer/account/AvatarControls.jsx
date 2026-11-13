@@ -1,4 +1,4 @@
-﻿import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import useAuth from '../../../hooks/useAuth';
 import { createImageUpload, uploadImageBytes, completeImageUpload } from '../../../api/media';
@@ -9,6 +9,31 @@ export default function AvatarControls() {
   const { updateProfile } = useAuth();
   const inputRef = useRef(null);
   const [notice, setNotice] = useState(null);
+
+  useEffect(() => {
+    if (!notice) return;
+
+    const timer = setTimeout(() => {
+      setNotice(null);
+    }, 4000);
+
+    function handleInteraction(e) {
+      if (e.target.closest?.('.profile-screen__avatar-notice')) return;
+      setNotice(null);
+    }
+
+    const interactionTimeout = setTimeout(() => {
+      document.addEventListener('pointerdown', handleInteraction);
+      document.addEventListener('keydown', handleInteraction);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(interactionTimeout);
+      document.removeEventListener('pointerdown', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+  }, [notice]);
   const mutation = useMutation({
     retry: false,
     gcTime: 0,

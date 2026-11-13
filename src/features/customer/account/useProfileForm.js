@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import { buildProfilePayload, isProfileDirty, validateProfile } from './profileValidation';
 
@@ -46,6 +46,32 @@ export default function useProfileForm() {
       setDraft(newBaseline);
     }
   }
+
+  // Auto-dismiss success message after 4s or on user interaction elsewhere
+  useEffect(() => {
+    if (!statusMessage || statusMessage.type !== 'success') return;
+
+    const timer = setTimeout(() => {
+      setStatusMessage(null);
+    }, 4000);
+
+    function handleInteraction(e) {
+      if (e.target.closest?.('.profile-screen__alert')) return;
+      setStatusMessage(null);
+    }
+
+    const interactionTimeout = setTimeout(() => {
+      document.addEventListener('pointerdown', handleInteraction);
+      document.addEventListener('keydown', handleInteraction);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(interactionTimeout);
+      document.removeEventListener('pointerdown', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+  }, [statusMessage]);
 
   const handleChange = useCallback((field, value) => {
     setDraft((prev) => ({ ...prev, [field]: value }));
