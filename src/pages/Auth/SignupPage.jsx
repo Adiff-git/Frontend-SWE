@@ -1,10 +1,5 @@
-function SignupPage() {
-  return (
-    <>
-      <h1>Sign Up</h1>
-      <p>Placeholder for the sign-up functionality.</p>
-    </>
-  )
-}
+import AuthScreen from '../../features/customer/auth/AuthScreen'
+
+function SignupPage() { return <AuthScreen mode="signup" /> }
 
 export default SignupPage

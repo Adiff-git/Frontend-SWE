@@ -1,0 +1,397 @@
+.orders-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.orders-screen__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orders-screen__title {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 36px;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+  color: var(--color-text, #1d1d1f);
+  margin: 0;
+}
+
+.orders-screen__subtitle {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary, #5f5f66);
+  margin: 0;
+}
+
+.orders-screen__fixture-notice {
+  background-color: var(--color-brand-subtle, #ebf3ff);
+  border: 1px solid #c7dcff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orders-screen__fixture-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.orders-screen__fixture-text {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-brand-strong, #0040a4);
+  margin: 0;
+}
+
+.orders-screen__filter-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orders-screen__tabs {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e3e3e8);
+  border-radius: 8px;
+  padding: 0 8px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.orders-screen__tab {
+  flex: 1;
+  min-width: fit-content;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  color: var(--color-text-secondary, #5f5f66);
+  cursor: pointer;
+  padding: 0 12px;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.orders-screen__tab:hover {
+  color: var(--color-text, #1d1d1f);
+}
+
+.orders-screen__tab--active {
+  border-bottom-color: var(--color-brand, #0055d6);
+  color: var(--color-text, #1d1d1f);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.orders-screen__search-wrap {
+  background-color: var(--color-surface-subtle, #f5f5f7);
+  border: 1px solid var(--color-border, #e3e3e8);
+  border-radius: 8px;
+  height: 44px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.orders-screen__search-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.orders-screen__search-input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text, #1d1d1f);
+  outline: none;
+}
+
+.orders-screen__search-input::placeholder {
+  color: var(--color-text-secondary, #5f5f66);
+}
+
+.orders-screen__list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orders-screen__empty {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e3e3e8);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.orders-screen__empty-title {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 16px;
+  color: var(--color-text, #1d1d1f);
+  margin: 0 0 8px;
+}
+
+.orders-screen__empty-desc {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  color: var(--color-text-secondary, #5f5f66);
+  margin: 0;
+}
+
+/* Order Card */
+.order-card {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e3e3e8);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card__header {
+  border-bottom: 1px solid var(--color-border, #e3e3e8);
+  padding-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-card__id {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 16px;
+  color: var(--color-text, #1d1d1f);
+}
+
+.order-card__date {
+  flex: 1;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary, #5f5f66);
+}
+
+.order-card__badge {
+  background-color: var(--color-surface-subtle, #f5f5f7);
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--color-text, #1d1d1f);
+}
+
+.order-card__items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.order-card__item-img-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e3e3e8);
+  padding: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface, #ffffff);
+  flex-shrink: 0;
+}
+
+.order-card__item-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.order-card__item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.order-card__item-name {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 15px;
+  color: var(--color-text, #1d1d1f);
+  margin: 0;
+}
+
+.order-card__item-variant {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary, #5f5f66);
+  margin: 0;
+}
+
+.order-card__item-price {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: 14px;
+  color: var(--color-text, #1d1d1f);
+  white-space: nowrap;
+}
+
+.order-card__total-row {
+  border-top: 1px solid var(--color-border, #e3e3e8);
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-card__payment-info {
+  flex: 1;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary, #5f5f66);
+  margin: 0;
+}
+
+.order-card__total-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.order-card__total-label {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  color: var(--color-text-secondary, #5f5f66);
+}
+
+.orders-screen__unavailable {
+  background-color: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e3e3e8);
+  border-radius: 12px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.orders-screen__unavailable-icon {
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.orders-screen__unavailable-title {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 20px;
+  color: var(--color-text, #1d1d1f);
+  margin: 0 0 10px;
+}
+
+.orders-screen__unavailable-desc {
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary, #5f5f66);
+  max-width: 480px;
+  margin: 0;
+}
+
+.order-card__total-price {
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 20px;
+  color: var(--color-text, #1d1d1f);
+}
+
+.order-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.order-card__detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-family-body, 'Be Vietnam Pro', sans-serif);
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: 14px;
+  color: var(--color-brand, #0055d6);
+  cursor: pointer;
+  padding: 0;
+}
+
+.order-card__detail-btn:hover {
+  text-decoration: underline;
+}
+
+.order-card__action-btn {
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-family: var(--font-family-heading, 'Manrope', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .order-card__total-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .order-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .order-card__action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
