@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import ChatWidget from '../features/assistant/ChatWidget'
 import './CustomerLayout.css'
 
 // Shared page frame: a top bar with a switch button, and the current page below it.
@@ -29,6 +30,7 @@ function CustomerLayout() {
       <main className="layout__content">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   )
 }
