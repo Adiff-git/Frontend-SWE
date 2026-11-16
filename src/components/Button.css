@@ -17,7 +17,15 @@
 }
 
 .button:hover:not(:disabled) { background: var(--color-brand-strong); }
-.button:disabled { cursor: wait; opacity: 0.65; }
+.button:disabled { cursor: not-allowed; opacity: 0.65; }
+.button[aria-busy="true"] { cursor: wait; }
+.button--compact { min-height: 40px; padding: var(--space-8) var(--space-16); font-family: var(--font-family-body); font-size: var(--font-size-13); border-radius: var(--radius-8); }
+.button--outline { background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); }
+.button--outline:hover:not(:disabled) { background: var(--color-surface-subtle); }
+.button--danger { background: var(--color-error); }
+.button--danger:hover:not(:disabled) { background: var(--color-text); }
+.button--outline.button--danger { background: var(--color-surface); color: var(--color-error); border-color: var(--color-error); }
+.button--outline.button--danger:hover:not(:disabled) { background: var(--color-error-subtle); }
 .button__spinner {
   width: 16px;
   height: 16px;

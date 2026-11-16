@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import xIcon from '../assets/account/x.svg';
 import './Dialog.css';
 
@@ -13,7 +14,9 @@ export default function Dialog({
   maxWidth = 520,
   ariaLabel,
   dismissible = true,
+  description,
 }) {
+  const titleId = useId();
   const dialogRef = useRef(null);
   const previouslyFocusedRef = useRef(null);
   const onCloseRef = useRef(onClose);
@@ -31,9 +34,12 @@ export default function Dialog({
     if (!open) return;
 
     previouslyFocusedRef.current = document.activeElement;
+    const siblings = [...document.body.children].filter(el => el !== dialogRef.current?.closest('.dialog-overlay'));
+    const previousInert = siblings.map(el => el.inert);
+    siblings.forEach(el => { el.inert = true; });
     const focusableElements = dialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR);
     const firstFocusable = focusableElements?.[0];
-    firstFocusable?.focus();
+    (firstFocusable || dialogRef.current)?.focus();
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
@@ -70,6 +76,7 @@ export default function Dialog({
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      siblings.forEach((el, index) => { el.inert = previousInert[index]; });
       previouslyFocusedRef.current?.focus?.();
     };
   }, [open]);
@@ -88,19 +95,22 @@ export default function Dialog({
     }
   };
 
-  return (
+  return createPortal(
     <div className="dialog-overlay" onClick={handleOverlayClick} role="presentation">
       <div
         className="dialog-card"
         style={{ maxWidth: `${maxWidth}px` }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        tabIndex={-1}
         aria-modal="true"
-        aria-label={ariaLabel || title}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabel ? undefined : titleId}
+        aria-describedby={description ? `${titleId}-description` : undefined}
         ref={dialogRef}
       >
         <div className="dialog-card__header">
-          {title && <h2 className="dialog-card__title">{title}</h2>}
+          {title && <h2 id={titleId} className="dialog-card__title">{title}</h2>}
           <button
             type="button"
             className="dialog-card__close-btn"
@@ -111,8 +121,9 @@ export default function Dialog({
             <img src={xIcon} alt="" width="20" height="20" />
           </button>
         </div>
+        {description && <p id={`${titleId}-description`}>{description}</p>}
         <div className="dialog-card__body">{children}</div>
       </div>
-    </div>
+    </div>, document.body
   );
 }
