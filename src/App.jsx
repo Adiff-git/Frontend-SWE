@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import CustomerLayout from './components/CustomerLayout';
 import AuthLayout from './components/AuthLayout';
@@ -22,6 +23,8 @@ import SignupVerifyPage from './pages/Auth/SignupVerifyPage';
 import ForgotPassPage from './pages/Auth/ForgotPassPage';
 import ResetPassPage from './pages/Auth/ResetPassPage';
 import GoogleCallbackPage from './pages/Auth/GoogleCallbackPage';
+
+const AdminPreview = import.meta.env.DEV ? lazy(() => import('./features/admin/AdminWorkspace')) : null;
 
 function App({ googleCallback }) {
   return (
@@ -66,9 +69,7 @@ function App({ googleCallback }) {
         </Route>
 
         {/* Admin boundary: temporary fail-closed until role authorization contract exists */}
-        <Route element={<AdminBoundary />}>
-          <Route path="/admin/*" element={null} />
-        </Route>
+        <Route path="/admin/*" element={AdminPreview ? <Suspense fallback={<p role="status">Đang mở không gian quản trị…</p>}><AdminPreview /></Suspense> : <AdminBoundary />} />
       </Routes>
     </LogoutConfirmationProvider>
   );
