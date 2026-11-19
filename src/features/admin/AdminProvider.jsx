@@ -17,15 +17,15 @@ export default function AdminProvider({ children }) {
   }, [notice]);
   const updateScenario = (value) => { scenarioRef.current = value; setScenario(value); };
   const mutate = (transform) => {
-    if (scenarioRef.current === 'error') throw new Error('Chưa thể lưu. Bản nháp được giữ lại; chọn “Bình thường” rồi thử lại.');
+    if (scenarioRef.current === 'error') throw new Error('Chưa thể lưu thay đổi. Dữ liệu nháp đã được giữ lại, vui lòng thử lại.');
     if (scenarioRef.current === 'conflict') throw new Error('Dữ liệu đã thay đổi. Tải lại phiên bản đã lưu và kiểm tra trước khi lưu.');
     if (scenarioRef.current === 'unknown') throw new Error('Chưa xác nhận được kết quả. Tải lại dữ liệu đã lưu trước khi thử lại.');
-    if (['forbidden', 'loading', 'empty'].includes(scenarioRef.current)) throw new Error('Thao tác không khả dụng trong tình huống xem trước này.');
+    if (['forbidden', 'loading', 'empty'].includes(scenarioRef.current)) throw new Error('Thao tác hiện không khả dụng. Vui lòng kiểm tra quyền truy cập hoặc tải lại trang.');
     const next = transform(current.current);
     current.current = next;
     setCatalog(next);
-    setNotice('Đã lưu thay đổi trong bản xem trước. Dữ liệu sẽ đặt lại khi tải lại trang.');
+    setNotice('Đã lưu thay đổi.');
   };
-  const reset = () => { resetDrafts(); resetMedia(); const next = createCatalog(); current.current = next; setCatalog(next); updateScenario('normal'); setNotice('Đã đặt lại dữ liệu mẫu.'); };
+  const reset = () => { resetDrafts(); resetMedia(); const next = createCatalog(); current.current = next; setCatalog(next); updateScenario('normal'); setNotice('Đã khôi phục dữ liệu.'); };
   return <AdminContext.Provider value={{ catalog, mutate, notice, setNotice, scenario, setScenario: updateScenario, reset }}>{children}</AdminContext.Provider>;
 }

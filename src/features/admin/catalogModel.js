@@ -16,23 +16,23 @@ export const seedCategories = [
 ];
 export const seedBrands = ['Apple', 'Samsung', 'Sony', 'Dell'].map(name => ({ id: name.toLowerCase(), name, active: true }));
 const templates = [
-  ['iPhone 15 Pro Max', 'IP15PM', 'iphone', 'apple', 29990000, '83e2e.png', '256GB · Titan tự nhiên'],
-  ['MacBook Pro 14 M3 Pro', 'MBP14', 'laptops', 'apple', 49990000, '954ff.png', '18GB / 512GB · Đen'],
-  ['Samsung Galaxy S24 Ultra', 'S24U', 'galaxy', 'samsung', 31490000, 'b957a.png', '512GB · Titan xám'],
-  ['iPad Air M2 11 inch', 'IPADA', 'tablets', 'apple', 16990000, '770f2.png', '128GB · Starlight'],
-  ['Củ sạc Apple 20W', 'AP20W', 'accessories', 'apple', 490000, '09c2f.png', 'USB-C · Trắng'],
-  ['Sony WH-1000XM5', 'SONYXM5', 'audio', 'sony', 6490000, 'b0ac1.png', 'Đen · Không dây'],
-  ['Apple Watch Series 9', 'AW9', 'watches', 'apple', 9990000, 'cacd1.png', '45mm · Hồng'],
-  ['Dell UltraSharp U2723QE', 'DELL27', 'monitors', 'dell', 12990000, 'f4b10.png', '27 inch · 4K'],
+  ['iPhone 15 Pro Max', 'IP15PM', 'iphone', 'apple', 29990000, '83e2e.png', '256GB · Titan tự nhiên', 'Thiết kế khung viền titan bền nhẹ, chip A17 Pro mạnh mẽ và hệ thống camera chuyên nghiệp.'],
+  ['MacBook Pro 14 M3 Pro', 'MBP14', 'laptops', 'apple', 49990000, '954ff.png', '18GB / 512GB · Đen', 'Hiệu năng vượt trội với chip Apple M3 Pro, màn hình Liquid Retina XDR sắc nét và thời lượng pin dài.'],
+  ['Samsung Galaxy S24 Ultra', 'S24U', 'galaxy', 'samsung', 31490000, 'b957a.png', '512GB · Titan xám', 'Tích hợp bút S Pen tiện lợi, khung titan cao cấp cùng camera 200MP hỗ trợ zoom quang học.'],
+  ['iPad Air M2 11 inch', 'IPADA', 'tablets', 'apple', 16990000, '770f2.png', '128GB · Starlight', 'Màn hình Liquid Retina 11 inch sống động, chip M2 nhanh nhạy cho công việc và giải trí.'],
+  ['Củ sạc Apple 20W', 'AP20W', 'accessories', 'apple', 490000, '09c2f.png', 'USB-C · Trắng', 'Sạc nhanh công suất 20W qua cổng USB-C, tương thích tốt với iPhone và iPad.'],
+  ['Sony WH-1000XM5', 'SONYXM5', 'audio', 'sony', 6490000, 'b0ac1.png', 'Đen · Không dây', 'Tai nghe chụp tai chống ồn chủ động hàng đầu, âm thanh chi tiết và đàm thoại rõ nét.'],
+  ['Apple Watch Series 9', 'AW9', 'watches', 'apple', 9990000, 'cacd1.png', '45mm · Hồng', 'Theo dõi sức khỏe toàn diện, màn hình sáng rõ và thao tác chạm hai lần tiện lợi.'],
+  ['Dell UltraSharp U2723QE', 'DELL27', 'monitors', 'dell', 12990000, 'f4b10.png', '27 inch · 4K', 'Màn hình 27 inch độ phân giải 4K sắc nét, chuẩn màu đồ họa cùng kết nối USB-C đa năng.'],
 ];
 export function createCatalog() {
   return {
     ...createOperations(),
     categories: structuredClone(seedCategories), brands: structuredClone(seedBrands),
     products: Array.from({ length: 24 }, (_, i) => {
-      const [name, code, categoryId, brandId, price, image, configuration] = templates[i % templates.length];
+      const [name, code, categoryId, brandId, price, image, configuration, description] = templates[i % templates.length];
       return { id: `product-${i + 1}`, name: i < 8 ? name : `${name} — Bộ ${Math.floor(i / 8) + 1}`,
-        code: `${code}-${i + 1}`, categoryId, brandId, description: 'Sản phẩm minh họa cho bản xem trước Chạm Tech.',
+        code: `${code}-${i + 1}`, categoryId, brandId, description,
         status: i === 22 ? 'draft' : i === 23 ? 'inactive' : 'active', version: 1,
         images: [{ id: `image-${i}`, source: image, name: `${code.toLowerCase()}.jpg` }],
         specifications: [{ id: `spec-${i}`, name: 'Cấu hình', value: configuration }],

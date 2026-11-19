@@ -4,7 +4,7 @@ import Button from '../../components/Button';
 
 const icons = { products: '6ae2c.svg', categories: '2aa17.svg', brands: 'efa45.svg', orders: 'd7b3b.svg', customers: '7e361.svg', promotions: 'c36c7.svg', reviews: '9a0b2.svg', statistics: 'c759f.svg', plus: 'f6d0a.svg', search: 'dc863.svg', edit: '5164f.svg', upload: '2cb1b.svg' };
 export function Icon({ name }) { return <img className="admin-icon" src={asset(icons[name] || icons.products)} alt="" />; }
-export function PageHeading({ title, description, children }) { return <div className="admin-page-heading"><div><h1>{title}</h1><p>{description}</p></div><div className="admin-actions">{children}</div></div>; }
+export function PageHeading({ title, description, children }) { return <div className="admin-page-heading"><div><h1>{title}</h1>{description && <p>{description}</p>}</div><div className="admin-actions">{children}</div></div>; }
 export function Panel({ title, description, children, actions, className = '' }) { return <section className={`admin-panel ${className}`}><div className="admin-panel-heading"><div><h2>{title}</h2>{description && <p>{description}</p>}</div>{actions}</div>{children}</section>; }
 export function Badge({ children, tone = 'neutral' }) { return <span className={`admin-badge admin-badge--${tone}`}>{children}</span>; }
 export function Empty({ title = 'Chưa có dữ liệu', description = 'Thêm bản ghi đầu tiên để bắt đầu.', children }) { return <div className="admin-empty"><Icon name="products" /><h2>{title}</h2><p>{description}</p>{children}</div>; }

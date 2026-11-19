@@ -1,11 +1,9 @@
 import { asset } from './adminAssets';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import Button from '../../components/Button';
-import Dialog from '../../components/Dialog';
 import AdminProvider from './AdminProvider';
 import { useAdmin } from './adminContext';
-import { Badge, Empty, Icon } from './shared';
+import { Empty, Icon } from './shared';
 import ProductsScreen from './ProductsScreen';
 import ProductEditor from './ProductEditor';
 import TaxonomyScreen from './TaxonomyScreen';
@@ -22,10 +20,8 @@ import './admin.css';
 const navigation = [['products', 'Sản phẩm'], ['categories', 'Danh mục'], ['brands', 'Thương hiệu'], ['orders', 'Đơn hàng'], ['customers', 'Khách hàng'], ['promotions', 'Khuyến mãi'], ['reviews', 'Đánh giá'], ['statistics', 'Thống kê'], ['settings', 'Cài đặt cửa hàng']];
 function Workspace() {
   const { pathname } = useLocation();
-  const { notice, setNotice, scenario, setScenario, reset } = useAdmin();
+  const { notice, setNotice } = useAdmin();
   const [menu, setMenu] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [resetGeneration, setResetGeneration] = useState(0);
   const menuRef = useRef(null);
   const menuButton = useRef(null);
   const active = navigation.find(([key]) => pathname.includes(`/admin/${key}`))?.[1] || 'Quản trị';
@@ -50,16 +46,14 @@ function Workspace() {
     <a className="admin-skip" href="#admin-main">Đến nội dung chính</a>
     {menu && <button className="admin-nav-backdrop" aria-label="Đóng điều hướng" onClick={() => { setMenu(false); menuButton.current?.focus(); }} />}
     <aside className={`admin-sidebar${menu ? ' admin-sidebar--open' : ''}`} ref={menuRef} aria-label="Điều hướng quản trị">
-      <Link to="/admin/products" className="admin-logo" onClick={() => setMenu(false)}><span className="admin-logo-mark"><img src={asset('e2594.png')} alt="Chạm Tech" /></span><span className="admin-logo-caption">Không gian quản trị</span></Link>
+      <Link to="/admin/products" className="admin-logo" onClick={() => setMenu(false)}><span className="admin-logo-mark"><img src={asset('e2594.png')} alt="Chạm Tech" /></span></Link>
       <nav>{navigation.map(([key, label]) => <NavLink key={key} to={`/admin/${key}`} onClick={() => setMenu(false)}><Icon name={key} />{label}</NavLink>)}</nav>
-      <div className="admin-workspace-note"><span>KHÔNG GIAN LÀM VIỆC</span><strong>Cửa hàng trực tuyến</strong><Badge tone="brand">Dữ liệu minh họa</Badge><Link to="/">Xem cửa hàng</Link></div>
-      <p className="admin-sidebar-foot">Chạm Tech · Bản xem trước</p>
+      <div className="admin-workspace-note"><Link to="/">Xem cửa hàng</Link></div>
     </aside>
     <div className="admin-workspace" inert={menu || undefined}>
-      <header className="admin-header"><button className="admin-menu-button" ref={menuButton} onClick={() => setMenu(true)} aria-expanded={menu} aria-label="Mở điều hướng">Menu</button><span>Quản trị <span aria-hidden="true">/</span> {active}</span><Badge tone="brand">Dữ liệu mẫu</Badge><div className="admin-identity"><span className="admin-avatar">ML</span><div><strong>Mai Linh</strong><small>Nhân vật minh họa</small></div></div></header>
-      <div className="admin-preview-bar"><span>Không gian thử nghiệm · Thao tác chỉ áp dụng cho dữ liệu mẫu trong phiên</span><Button size="compact" emphasis="outline" onClick={() => setConfirmReset(true)}>Đặt lại dữ liệu</Button></div>
+      <header className="admin-header"><button className="admin-menu-button" ref={menuButton} onClick={() => setMenu(true)} aria-expanded={menu} aria-label="Mở điều hướng">Menu</button><span>Quản trị <span aria-hidden="true">/</span> {active}</span><div className="admin-identity"><span className="admin-avatar">ML</span><div><strong>Mai Linh</strong><small>Quản trị viên</small></div></div></header>
       <main id="admin-main" className="admin-main" tabIndex={-1}>
-        <Routes key={resetGeneration}>
+        <Routes>
           <Route index element={<Navigate to="products" replace />} />
           <Route path="products" element={<ProductsScreen />} />
           <Route path="products/overview" element={<OverviewScreen />} />
@@ -80,11 +74,9 @@ function Workspace() {
           <Route path="statistics" element={<StatisticsScreen />} />
           <Route path="*" element={<Empty title="Không tìm thấy màn hình" description="Chọn một mục trong điều hướng hoặc quay về danh sách sản phẩm."><Link className="admin-text-link" to="/admin/products">Quay về sản phẩm</Link></Empty>} />
         </Routes>
-        <details className="admin-scenarios"><summary>Tình huống xem trước</summary><label>Trạng thái dữ liệu <select value={scenario} onChange={e => setScenario(e.target.value)}>{[['normal', 'Bình thường'], ['empty', 'Chưa có dữ liệu'], ['loading', 'Đang tải'], ['error', 'Lỗi lưu'], ['conflict', 'Xung đột'], ['unknown', 'Chưa xác nhận kết quả'], ['forbidden', 'Không có quyền']].map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><p>Chọn “Bình thường” để kết thúc tình huống. Đây là mô phỏng có chủ đích.</p></details>
       </main>
     </div>
     <div className="admin-notification" role="status" aria-live="polite">{notice && <div><span>{notice}</span><button onClick={() => setNotice('')} aria-label="Đóng thông báo">Đóng</button></div>}</div>
-    <Dialog open={confirmReset} title="Đặt lại dữ liệu mẫu?" onClose={() => setConfirmReset(false)}><p>Mọi thay đổi trong bản xem trước sẽ được thay bằng dữ liệu ban đầu.</p><div className="admin-dialog-actions"><Button size="compact" emphasis="outline" onClick={() => setConfirmReset(false)}>Giữ lại</Button><Button size="compact" onClick={() => { reset(); setResetGeneration(n => n + 1); setConfirmReset(false); }}>Đặt lại dữ liệu</Button></div></Dialog>
   </div>;
 }
 export default function AdminWorkspace() { return <AdminProvider><Workspace /></AdminProvider>; }

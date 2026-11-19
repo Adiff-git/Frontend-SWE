@@ -2,14 +2,30 @@
 export const orderStates = { pending: 'Chờ xác nhận', confirmed: 'Đã xác nhận', packing: 'Đang đóng gói', shipping: 'Đang giao hàng', completed: 'Hoàn tất', cancelled: 'Đã hủy' };
 export const nextOrderState = { pending: 'confirmed', confirmed: 'packing', packing: 'shipping', shipping: 'completed' };
 export function createOperations() {
-  const customers = ['Nguyễn Tuấn Anh', 'Lê Hoàng Linh', 'Phạm Thanh Tú', 'Trần Minh Khoa', 'Đỗ Ngọc Mai', 'Vũ Đức Huy'].map((name, i) => ({ id: `customer-${i + 1}`, name, email: `khach${i + 1}@example.com`, phone: `090000000${i}`, joined: `2026-10-${String(10 + i).padStart(2, '0')}`, address: 'Địa chỉ giao hàng minh họa · TP. Hồ Chí Minh', locked: i === 5, version: 1, history: [] }));
+  const addresses = [
+    '128 Nguyễn Thị Minh Khai, Quận 3, TP. Hồ Chí Minh',
+    '45 Lê Lợi, Quận 1, TP. Hồ Chí Minh',
+    '210 Phan Xích Long, Quận Phú Nhuận, TP. Hồ Chí Minh',
+    '86 Võ Văn Tần, Quận 3, TP. Hồ Chí Minh',
+    '312 Cách Mạng Tháng 8, Quận 10, TP. Hồ Chí Minh',
+    '19 Nguyễn Hữu Thọ, Quận 7, TP. Hồ Chí Minh',
+  ];
+  const emails = [
+    'tuananh.nguyen@gmail.com',
+    'hoanglinh.le@gmail.com',
+    'thanhtu.pham@gmail.com',
+    'minhkhoa.tran@gmail.com',
+    'ngocmai.do@gmail.com',
+    'duchuy.vu@gmail.com',
+  ];
+  const customers = ['Nguyễn Tuấn Anh', 'Lê Hoàng Linh', 'Phạm Thanh Tú', 'Trần Minh Khoa', 'Đỗ Ngọc Mai', 'Vũ Đức Huy'].map((name, i) => ({ id: `customer-${i + 1}`, name, email: emails[i], phone: `090123450${i}`, joined: `2026-10-${String(10 + i).padStart(2, '0')}`, address: addresses[i], locked: i === 5, version: 1, history: [] }));
   const states = Object.keys(orderStates);
   return {
     customers,
-    orders: Array.from({ length: 18 }, (_, i) => ({ id: `CT-${9821 - i}`, customerId: customers[i % 6].id, status: states[i % 6], method: i % 2 ? 'Chuyển khoản mẫu' : 'COD', paid: i % 2 === 1, date: `2026-11-${String(1 + i % 15).padStart(2, '0')}`, version: 1, shippingFee: 30000, discount: 0, tracking: '', items: [{ productId: `product-${i % 8 + 1}`, sku: `SKU-SNAPSHOT-${i + 1}`, name: ['iPhone 15 Pro Max', 'MacBook Pro 14 M3 Pro', 'Samsung Galaxy S24 Ultra', 'iPad Air M2', 'Củ sạc Apple 20W', 'Sony WH-1000XM5', 'Apple Watch Series 9', 'Dell UltraSharp'][i % 8], quantity: 1, price: [29990000,49990000,31490000,16990000,490000,6490000,9990000,12990000][i % 8] }], history: [{ at: '2026-11-01T03:00:00Z', text: 'Đơn hàng mẫu được tạo', actor: 'Khách hàng mẫu' }] })),
+    orders: Array.from({ length: 18 }, (_, i) => ({ id: `CT-${9821 - i}`, customerId: customers[i % 6].id, status: states[i % 6], method: i % 2 ? 'Chuyển khoản' : 'COD', paid: i % 2 === 1, date: `2026-11-${String(1 + i % 15).padStart(2, '0')}`, version: 1, shippingFee: 30000, discount: 0, tracking: '', items: [{ productId: `product-${i % 8 + 1}`, sku: `CT-SKU-${1001 + i}`, name: ['iPhone 15 Pro Max', 'MacBook Pro 14 M3 Pro', 'Samsung Galaxy S24 Ultra', 'iPad Air M2', 'Củ sạc Apple 20W', 'Sony WH-1000XM5', 'Apple Watch Series 9', 'Dell UltraSharp'][i % 8], quantity: 1, price: [29990000,49990000,31490000,16990000,490000,6490000,9990000,12990000][i % 8] }], history: [{ at: '2026-11-01T03:00:00Z', text: 'Đơn hàng được tạo', actor: customers[i % 6].name }] })),
     reviews: customers.map((c, i) => ({ id: `review-${i}`, customerId: c.id, productId: `product-${i + 1}`, rating: i === 5 ? 1 : 5 - i % 2, text: ['Màn hình đẹp, dùng mượt. Đóng gói cẩn thận.', 'Máy hoạt động ổn định, đúng cấu hình.', 'Camera rõ, pin dùng tốt.', 'Sản phẩm phù hợp công việc.', 'Phụ kiện nhỏ gọn, dễ sử dụng.', 'Bình luận chứa nội dung quảng cáo không liên quan.'][i], status: i < 2 ? 'pending' : i === 5 ? 'hidden' : 'approved', version: 1, history: [] })),
     promotions: [{ id: 'promo-1', name: 'Chạm tháng 11', code: 'CHAM11', type: 'percent', amount: 10, cap: 500000, minimum: 1000000, limit: 100, perCustomer: 1, used: 8, from: '2026-11-01T00:00', to: '2026-11-30T23:59', enabled: true, scope: '', group: 'all', noStack: true, version: 1 }],
-    settings: { version: 1, name: 'Chạm Tech', email: 'support@example.com', phone: '0900000000', branch: 'Chi nhánh minh họa · TP. Hồ Chí Minh', shippingFee: 30000, freeShipping: 5000000, featured: ['product-1', 'product-2'], banners: [{ id: 'banner-1', title: 'Chạm công nghệ, mở trải nghiệm', link: '/products', active: true }] },
+    settings: { version: 1, name: 'Chạm Tech', email: 'support@chamtech.vn', phone: '0901234567', branch: '120 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh', shippingFee: 30000, freeShipping: 5000000, featured: ['product-1', 'product-2'], banners: [{ id: 'banner-1', title: 'Chạm công nghệ, mở trải nghiệm', link: '/products', active: true }] },
   };
 }
 export const orderTotal = order => order.items.reduce((sum, item) => sum + item.quantity * item.price, 0) - order.discount + order.shippingFee;
@@ -19,10 +35,10 @@ export function transitionOrder(order, target, reason, tracking) {
     if (!reason.trim()) throw new Error('Nhập lý do hủy đơn.');
   } else {
     if (nextOrderState[order.status] !== target) throw new Error('Trạng thái đã đổi. Hãy kiểm tra thao tác được phép.');
-    if (target === 'shipping' && !tracking.trim()) throw new Error('Nhập mã vận đơn mẫu trước khi bàn giao.');
-    if (target === 'shipping' && order.method !== 'COD' && !order.paid) throw new Error('Đơn trả trước cần xác nhận thanh toán. Không thể xác nhận thanh toán thật trong bản xem trước.');
+    if (target === 'shipping' && !tracking.trim()) throw new Error('Nhập mã vận đơn trước khi bàn giao.');
+    if (target === 'shipping' && order.method !== 'COD' && !order.paid) throw new Error('Đơn trả trước cần được xác nhận thanh toán trước khi bàn giao vận chuyển.');
   }
-  return { ...order, status: target, tracking: tracking || order.tracking, version: order.version + 1, history: [...order.history, { at: new Date().toISOString(), actor: 'Mai Linh · mẫu', text: target === 'cancelled' ? `Hủy đơn: ${reason}` : orderStates[target] }] };
+  return { ...order, status: target, tracking: tracking || order.tracking, version: order.version + 1, history: [...order.history, { at: new Date().toISOString(), actor: 'Mai Linh', text: target === 'cancelled' ? `Hủy đơn: ${reason}` : orderStates[target] }] };
 }
 export function promotionStatus(promo, now = '2026-11-16T12:00') {
   if (!promo.enabled) return { key: 'disabled', label: 'Đã tắt', tone: 'neutral' };
