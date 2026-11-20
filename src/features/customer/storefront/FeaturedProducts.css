@@ -1,0 +1,34 @@
+.featured { margin-top: 40px; padding: 40px 0 0; border-top: 1px solid var(--color-border); scroll-margin-top: 20px; }
+.featured__heading { min-height: 90px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.section-kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--color-brand-strong); font-size: 11px; font-weight: 700; letter-spacing: .6px; }
+.section-kicker > span { width: 7px; height: 7px; border-radius: 50%; background: var(--color-brand-strong); }
+.featured__title { margin: 0; font-family: var(--font-family-heading); font-size: 36px; font-weight: 700; letter-spacing: -1px; line-height: 1.3; }
+.featured__description { margin: 0; color: var(--color-text-secondary); font-size: 14px; }
+.featured__controls { display: flex; align-items: center; gap: 12px; }
+.storefront-search { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; color: var(--color-text-secondary); background: var(--color-surface-subtle); }
+.storefront-search input { width: 150px; border: 0; outline: 0; color: var(--color-text); background: transparent; font-size: 12px; }
+.storefront-search input::placeholder { color: var(--color-text-muted); }
+.brand-filters { display: flex; gap: 6px; }
+.brand-filter { min-height: 36px; padding: 0 14px; border: 1px solid transparent; border-radius: 8px; background: var(--color-surface-subtle); color: var(--color-text-secondary) !important; font-size: 12px; font-weight: 600; cursor: pointer; }
+.brand-filter--active { background: var(--color-surface); color: var(--color-text-storefront) !important; }
+.product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.featured__empty { grid-column: 1 / -1; padding: 32px; color: var(--color-text-secondary); text-align: center; }
+
+@media (max-width: 900px) {
+  .featured__heading { align-items: flex-start; }
+  .featured__controls { flex-direction: column; align-items: flex-end; }
+  .storefront-search input { width: 120px; }
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .featured { margin-top: 24px; padding-top: 28px; }
+  .featured__heading { display: block; margin-bottom: 18px; }
+  .featured__title { font-size: 30px; }
+  .featured__description { font-size: 12px; }
+  .featured__controls { align-items: stretch; margin-top: 14px; }
+  .storefront-search { display: flex; }
+  .storefront-search input { width: 100%; }
+  .brand-filters { justify-content: flex-start; }
+  .product-grid { gap: 10px; }
+}
