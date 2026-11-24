@@ -18,7 +18,8 @@ export default function useCategoryProducts(category, filters, sort, page) {
         if (!ignore) setState({ products: items, total, loading: false, error: null });
       })
       .catch((error) => {
-        if (!ignore) setState((s) => ({ ...s, loading: false, error }));
+        console.error("category load failed:", error);
+        if (!ignore) setState({ products: [], total: 0, loading: false, error });
       });
 
     return () => { ignore = true; };

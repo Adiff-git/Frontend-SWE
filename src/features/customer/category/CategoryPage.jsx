@@ -50,8 +50,6 @@ export default function CategoryPage() {
     setPage(1);
   }
 
-  if (error) return <p>Không thể tải sản phẩm. Vui lòng thử lại.</p>;
-
   return (
     <div className="storefront category-page" data-node-id="299:403">
       <div className="category-page__container">
@@ -67,9 +65,25 @@ export default function CategoryPage() {
             onApply={applyFilters}
           />
           <div className="category-page__catalog" data-node-id="299:594">
-            <CategoryProductGrid products={products} />
-            <CategoryPagination page={page} onPageChange={setPage} total={total} shown={products.length} />
-          </div>
+              {error ? (
+                <div className="category-page__message category-page__message--error" role="alert">
+                  <p>Không thể tải sản phẩm. Vui lòng thử lại.</p>
+                </div>
+              ) : loading ? (
+                <div className="category-page__message">
+                  <p>Đang tải sản phẩm…</p>
+                </div>
+              ) : products.length === 0 ? (
+                <div className="category-page__message">
+                  <p>Không tìm thấy sản phẩm phù hợp. Hãy thử bỏ bớt bộ lọc.</p>
+                </div>
+              ) : (
+                <>
+                  <CategoryProductGrid products={products} />
+                  <CategoryPagination page={page} onPageChange={setPage} total={total} shown={products.length} />
+                </>
+              )}
+            </div>
         </div>
       </div>
     </div>

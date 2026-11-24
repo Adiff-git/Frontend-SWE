@@ -36,3 +36,17 @@
   .category-page .product-card__price-row strong { font-size: 14px; }
   .category-page .product-card__price-row del { font-size: 9px; }
 }
+
+.category-page__message {
+    padding: 48px 16px;
+    text-align: center;
+    color: #555;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+
+.category-page__message--error {
+    color: #b00020;
+    border-color: #b00020;
+    background: #fdecee;
+}
