@@ -2,29 +2,37 @@ import { useEffect, useState } from "react";
 import { getCategoryProducts } from "./categoryApi";
 
 export default function useCategoryProducts(category, filters, sort, page) {
-  const [state, setState] = useState({
+  const [state, setState] = useState(() => ({
+    category,
+    filters,
+    sort,
+    page,
     products: [],
     total: 0,
     loading: true,
     error: null,
-  });
+  }));
 
   useEffect(() => {
-    let ignore = false; // ignore answers from outdated requests
-    setState((s) => ({ ...s, loading: true, error: null }));
+    let ignore = false;
 
     getCategoryProducts({ category, filters, sort, page })
       .then(({ items, total }) => {
-        if (!ignore) setState({ products: items, total, loading: false, error: null });
+        if (!ignore) setState({ category, filters, sort, page, products: items, total, loading: false, error: null });
       })
       .catch((error) => {
-        console.error("category load failed:", error);
-        if (!ignore) setState({ products: [], total: 0, loading: false, error });
+        if (!ignore) setState({ category, filters, sort, page, products: [], total: 0, loading: false, error });
       });
 
     return () => { ignore = true; };
   }, [category, filters, sort, page]);
 
-  return state;
+  const isCurrent = state.category === category && state.filters === filters && state.sort === sort && state.page === page;
 
+  return {
+    products: isCurrent ? state.products : [],
+    total: isCurrent ? state.total : 0,
+    loading: !isCurrent || state.loading,
+    error: isCurrent ? state.error : null,
+  };
 }

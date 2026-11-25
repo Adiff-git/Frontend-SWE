@@ -1,4 +1,4 @@
-import { IconAdjustmentsHorizontal, IconArrowDown, IconDeviceLaptop, IconFilter } from "@tabler/icons-react";
+import { IconArrowDown, IconDeviceLaptop, IconFilter } from "@tabler/icons-react";
 import FilterCheckGroup from "./FilterCheckGroup.jsx";
 import FilterToggleGroup from "./FilterToggleGroup.jsx";
 import PriceRangeFilter from "./PriceRangeFilter.jsx";

@@ -1,0 +1,20 @@
+.product-specifications { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; padding: 80px 0; }
+.product-specifications__description { margin: 16px 0; color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; }
+.product-specifications__package { margin-top: 24px; padding: 16px; border-radius: 12px; background: var(--color-surface-subtle); font-size: 12px; color: var(--color-text-secondary); }
+.product-specifications__package strong { display: flex; align-items: center; gap: 8px; color: var(--color-text-storefront); font-size: 13px; }
+.product-specifications__package strong svg { color: var(--color-brand-strong); }
+.product-specifications__package p { margin: 10px 0 0; }
+.product-specifications__groups { display: grid; align-content: start; gap: 12px; }
+.product-specifications__group { border: 1px solid var(--color-border); border-radius: 16px; }
+.product-specifications__group summary { min-height: 70px; display: flex; align-items: center; gap: 12px; padding: 18px 20px; cursor: pointer; list-style: none; }
+.product-specifications__group summary::-webkit-details-marker { display: none; }
+.product-specifications__group summary strong { font: 700 20px/1.4 var(--font-family-heading); }
+.product-specifications__icon { display: grid; flex: 0 0 32px; height: 32px; place-items: center; border-radius: 8px; color: var(--color-brand-strong); background: var(--color-brand-subtle); }
+.product-specifications__chevron { margin-left: auto; color: var(--color-text-secondary); }
+.product-specifications__group[open] .product-specifications__chevron { transform: rotate(180deg); }
+.product-specifications__group dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; margin: 0; padding: 4px 20px 20px; }
+.product-specifications__group dl div { padding: 10px 12px; border-radius: 8px; background: var(--color-surface-subtle); }
+.product-specifications__group dt { color: var(--color-text-muted); font-size: 12px; }
+.product-specifications__group dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; }
+@media (max-width: 900px) { .product-specifications { grid-template-columns: 1fr; gap: 24px; padding: 50px 0; } }
+@media (max-width: 500px) { .product-specifications__group summary strong { font-size: 16px; } .product-specifications__group dl { grid-template-columns: 1fr; } }

@@ -11,8 +11,7 @@ import "./StorefrontPage.css";
 
 export default function StorefrontPage() {
   const { data, loading, error } = useStorefront();
-  const products = data?.products ?? [];
-    
+
   const [activeBrand, setActiveBrand] = useState("Tất cả");
   const [activeCategory, setActiveCategory] = useState("");
   const [search, setSearch] = useState("");
@@ -20,6 +19,7 @@ export default function StorefrontPage() {
   const [addedProducts, setAddedProducts] = useState([]);
 
   const visibleProducts = useMemo(() => {
+    const products = data?.products ?? [];
     const query = search.trim().toLocaleLowerCase("vi");
     return products.filter((product) => {
       const matchesBrand = activeBrand === "Tất cả" || product.brand === activeBrand;
@@ -27,7 +27,7 @@ export default function StorefrontPage() {
       const matchesSearch = !query || `${product.name} ${product.brand} ${product.category}`.toLocaleLowerCase("vi").includes(query);
       return matchesBrand && matchesCategory && matchesSearch;
     });
-  }, [products, activeBrand, activeCategory, search]);
+  }, [data, activeBrand, activeCategory, search]);
 
   function addToCart(productId) {
     setCartCount((count) => count + 1);

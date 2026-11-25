@@ -1,5 +1,5 @@
 import { api } from "../../../api/client";
-import { categoryProducts, categoryFilterOptions } from "../../../mocks/category";
+import { categoryFilterOptions } from "../../../mocks/category";
 import { initialCategoryFilters } from "./categoryDefault";
 
 const SORT_MAP = { "price-low": "price-asc", "price-high": "price-desc" };
@@ -36,5 +36,6 @@ export async function getCategoryProducts({ categoryId, filters, sort, page }) {
 }
 
 export async function getFilterOptions(category) { // still mocks
+  void category;
   return categoryFilterOptions;
 }

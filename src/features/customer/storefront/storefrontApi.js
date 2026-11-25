@@ -1,5 +1,5 @@
 import { api } from "../../../api/client";
-import { categories, products, heroSlides, brands, discoveryPrompts } from "../../../mocks/storefront";
+import { categories, heroSlides, brands, discoveryPrompts } from "../../../mocks/storefront";
 
 export const toProductCard = (p) => ({
   id: p.id,
