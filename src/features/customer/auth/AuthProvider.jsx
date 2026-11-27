@@ -7,7 +7,7 @@ import { getCurrentUser, login as apiLogin, register, confirmRegistration, revok
 import { updateProfile as apiUpdateProfile } from '../../../api/profile';
 import { clearGoogleProof } from './googleFlow';
 
-const privateQuery = (query) => ['profile', 'addresses', 'orders', 'cart', 'googleConnection'].includes(query.queryKey[0]);
+const privateQuery = (query) => ['profile', 'addresses', 'orders', 'cart', 'googleConnection', 'admin'].includes(query.queryKey[0]);
 
 export default function AuthProvider({ children }) {
   const queryClient = useQueryClient();
