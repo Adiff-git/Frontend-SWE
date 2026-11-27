@@ -10,6 +10,7 @@ export class ApiError extends Error {
     this.data = data;
     this.code = data?.code;
     this.fieldErrors = data?.fieldErrors ?? {}; // { fieldName: ['message', ...] } for forms
+    this.violations = Array.isArray(data?.violations) ? data.violations : [];
   }
 }
 
@@ -24,7 +25,20 @@ function buildUrl(path, params) {
   const url = new URL(path, base);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
-      // .set (not .append): the contract rejects duplicate query parameters
+      if (Array.isArray(v)) {
+        const seen = new Set();
+        v.forEach((item) => {
+          if (item !== undefined && item !== null && item !== '') {
+            const text = String(item);
+            if (!seen.has(text)) {
+              seen.add(text);
+              url.searchParams.append(k, text);
+            }
+          }
+        });
+        return;
+      }
+      // .set (not .append): the contract rejects duplicate scalar query parameters
       if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
     });
   }
