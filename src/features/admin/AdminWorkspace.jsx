@@ -1,8 +1,10 @@
+import { BASE_URL } from '../../api/client';
 import { asset } from './adminAssets';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import AdminProvider from './AdminProvider';
 import { useAdmin } from './adminContext';
+import LiveAdminWorkspace from './live/LiveAdminWorkspace';
 import { Empty, Icon } from './shared';
 import ProductsScreen from './ProductsScreen';
 import ProductEditor from './ProductEditor';
@@ -79,4 +81,6 @@ function Workspace() {
     <div className="admin-notification" role="status" aria-live="polite">{notice && <div><span>{notice}</span><button onClick={() => setNotice('')} aria-label="Đóng thông báo">Đóng</button></div>}</div>
   </div>;
 }
-export default function AdminWorkspace() { return <AdminProvider><Workspace /></AdminProvider>; }
+export default function AdminWorkspace() {
+  return BASE_URL ? <LiveAdminWorkspace /> : <AdminProvider><Workspace /></AdminProvider>;
+}
