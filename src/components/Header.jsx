@@ -9,7 +9,7 @@ import bag from '../assets/auth/bag.svg';
 import userIcon from '../assets/auth/user.svg';
 import './Header.css';
 
-export default function Header() {
+export default function Header({ cartCount = 0 }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, status, retryBootstrap } = useAuth();
@@ -88,8 +88,13 @@ export default function Header() {
         <input name="q" aria-label="Tìm sản phẩm" placeholder="Tìm sản phẩm" type="search" />
       </form>
 
-      <Link className="header__cart" to="/cart" aria-label="Giỏ hàng">
+      <Link
+        className="header__cart"
+        to="/cart"
+        aria-label={cartCount > 0 ? `Giỏ hàng, ${cartCount} sản phẩm` : 'Giỏ hàng'}
+      >
         <img src={bag} alt="" width="20" height="20" />
+        {cartCount > 0 && <span className="header__cart-count">{cartCount}</span>}
       </Link>
 
       {/* Account Section */}

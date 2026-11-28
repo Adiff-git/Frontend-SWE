@@ -4,8 +4,10 @@ import FilterToggleGroup from "./FilterToggleGroup.jsx";
 import PriceRangeFilter from "./PriceRangeFilter.jsx";
 import "./CategoryFilters.css";
 
-export default function CategoryFilters({ options, count, filters, onChange, onApply }) {
-  if (!options) return null;
+const EMPTY = { brands: [], uses: [], ram: [], cpus: [], screens: [] };
+
+export default function CategoryFilters({ options: loaded, count, filters, onChange, onApply }) {
+  const options = loaded ?? EMPTY;
 
   return (
     <aside className="category-filter-panel" data-node-id="299:463" aria-label="Bộ lọc thông số">
@@ -17,7 +19,7 @@ export default function CategoryFilters({ options, count, filters, onChange, onA
       <FilterCheckGroup
         title="Thương hiệu"
         filterKey="brands"
-        items={options?.brands.map(({ name, count: itemCount }) => ({ value: name, label: name, count: itemCount }))}
+        items={options.brands.map(({ id, name, count: c }) => ({ value: id, label: name, count: c }))}
         selected={filters.brands}
         onChange={onChange}
       />

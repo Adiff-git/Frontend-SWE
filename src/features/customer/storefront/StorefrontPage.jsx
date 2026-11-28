@@ -1,4 +1,9 @@
 import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import useAuth from "../../../hooks/useAuth";
+import { addCartItem } from "../cart/cartApi";
+import { mapApiError } from "../cart/cartReasons";
 import useStorefront from "./useStorefront";
 import BrandPartners from "./BrandPartners";
 import CategorySection from "./CategorySection";
@@ -11,12 +16,17 @@ import "./StorefrontPage.css";
 
 export default function StorefrontPage() {
   const { data, loading, error } = useStorefront();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, user, generation } = useAuth();
 
   const [activeBrand, setActiveBrand] = useState("Tất cả");
   const [activeCategory, setActiveCategory] = useState("");
   const [search, setSearch] = useState("");
-  const [cartCount, setCartCount] = useState(2);
   const [addedProducts, setAddedProducts] = useState([]);
+  const [addingProductId, setAddingProductId] = useState(null);
+  const [cartMessage, setCartMessage] = useState("");
 
   const visibleProducts = useMemo(() => {
     const products = data?.products ?? [];
@@ -29,9 +39,30 @@ export default function StorefrontPage() {
     });
   }, [data, activeBrand, activeCategory, search]);
 
-  function addToCart(productId) {
-    setCartCount((count) => count + 1);
-    setAddedProducts((current) => current.includes(productId) ? current : [...current, productId]);
+  async function addToCart(product) {
+    if (!product?.variantId) {
+      setCartMessage("Sản phẩm chưa có biến thể để thêm vào giỏ hàng.");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+
+    setCartMessage("");
+    setAddingProductId(product.id);
+    try {
+      await addCartItem({ productVariantId: product.variantId, quantity: 1 });
+      setAddedProducts((current) => current.includes(product.id) ? current : [...current, product.id]);
+      if (user?.id) {
+        await queryClient.invalidateQueries({ queryKey: ["cart", user.id, generation] });
+      }
+    } catch (requestError) {
+      setCartMessage(mapApiError(requestError));
+    } finally {
+      setAddingProductId(null);
+    }
   }
 
   function selectPrompt(prompt) {
@@ -58,12 +89,14 @@ export default function StorefrontPage() {
   return (
     <div className="storefront" data-node-id="3:9206">
       <div className="storefront__content">
-        <HeroSection slides={data.heroSlides} onAddToCart={addToCart} />
+        <HeroSection slides={data.heroSlides} products={data.products} onAddToCart={addToCart} />
         <CategorySection categories={data.categories} activeCategory={activeCategory} onSelectCategory={selectCategory} onShowAll={showAllCategories} />
+        {cartMessage && <p className="storefront__cart-message" role="status">{cartMessage}</p>}
         <FeaturedProducts
           brands={data.brands}
           activeBrand={activeBrand}
           addedProducts={addedProducts}
+          addingProductId={addingProductId}
           onAddToCart={addToCart}
           onBrandChange={(brand) => { setActiveBrand(brand); setActiveCategory(""); }}
           onSearchChange={setSearch}
@@ -75,7 +108,6 @@ export default function StorefrontPage() {
         <ServiceCommitments />
       </div>
       <StorefrontFooter />
-      <span className="visually-hidden" aria-live="polite">Giỏ hàng có {cartCount} sản phẩm</span>
     </div>
   );
 }

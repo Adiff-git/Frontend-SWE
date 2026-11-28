@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams  } from "react-router-dom";
 import useCategoryProducts from "./useCategory";
 import useFilterOptions from "./useFilterOption";
 import ActiveFilterBar from "./ActiveFilterBar.jsx";
@@ -21,8 +21,10 @@ export default function CategoryPage() {
   const [page, setPage] = useState(1);
 
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
+  const categoryId = searchParams.get("categoryId") ?? undefined;
   const { products, total, loading, error } = useCategoryProducts(slug, appliedFilters, sortBy, page);
-  const options = useFilterOptions(slug);
+  const options = useFilterOptions(categoryId);
 
   const filterCount = appliedFilters.brands.length + appliedFilters.uses.length + appliedFilters.cpus.length + appliedFilters.screens.length + (appliedFilters.minRam > 0 ? 1 : 0) + (appliedFilters.minPrice > 15000000 || appliedFilters.maxPrice < 100000000 ? 1 : 0);
   const activeChips = [

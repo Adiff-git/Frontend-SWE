@@ -2,11 +2,13 @@ import { useState } from "react";
 import { IconArrowRight, IconSparkles } from "@tabler/icons-react";
 import "./HeroSection.css";
 
-export default function HeroSection({ slides, onAddToCart }) {
+export default function HeroSection({ slides, products = [], onAddToCart }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const slide = slides[activeSlide];
 
-  if (!slide) return null; 
+  if (!slide) return null;
+
+  const mappedProduct = products.find((product) => product.id === slide.productId);
 
   return (
     <section className="hero" data-node-id="3:9209" aria-label="Sản phẩm nổi bật">
@@ -25,7 +27,12 @@ export default function HeroSection({ slides, onAddToCart }) {
           {slide.discount && <span className="hero__discount">{slide.discount}</span>}
         </div>
         <div className="hero__actions">
-          <button className="storefront-button storefront-button--primary" onClick={() => onAddToCart(slide.productId)}>
+          <button
+            className="storefront-button storefront-button--primary"
+            type="button"
+            disabled={!mappedProduct?.variantId}
+            onClick={() => mappedProduct && onAddToCart(mappedProduct)}
+          >
             Chọn mua <IconArrowRight size={17} />
           </button>
           <a className="storefront-button storefront-button--soft" href="#featured-products">Khám phá thông số</a>
