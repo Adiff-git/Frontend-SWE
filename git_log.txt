@@ -1,3 +1,63 @@
+4a42fb8 | 2026-11-28 20:50:33 +0700 | DerZz | feat: complete UI for chatbox
+4d157d3 | 2026-11-28 18:45:19 +0700 | Ng Cong Kien | fix: fix data persistency issue; item now flow properly through different screen
+dd94bb7 | 2026-11-28 15:52:16 +0700 | Ng Cong Kien | fix: change js to be more adaptive to the shape of api response
+191220b | 2026-11-28 15:10:32 +0700 | DerZz | Merge remote-tracking branch 'origin/main' into feat/sprint4-chatbox
+44c0f0b | 2026-11-28 08:06:18 +0700 | Ng Cong Kien | feat: UI implemtation for cart using mock. API is connected
+89a4032 | 2026-11-28 00:12:12 +0700 | H | test(admin): add live admin API contract and helper unit tests
+c4e4a5d | 2026-11-28 00:12:11 +0700 | H | feat(admin): wire live catalog, inventory and behavior admin workspace
+6157fab | 2026-11-28 00:12:11 +0700 | H | feat(admin): add live admin session cache, error and spec helpers
+4601889 | 2026-11-28 00:12:10 +0700 | H | feat(api): add admin catalog, inventory and behavior API clients
+8e074a7 | 2026-11-25 12:01:12 +0700 | Ng Cong Kien | feat: ui and api connect for product detail screen include mock using VITE_USE_MOCKS=true in .env file
+f147b33 | 2026-11-25 01:16:41 +0700 | Ng Cong Kien | Merge branch 'feature/user-profile-management' into feature/homepage
+c596fd9 | 2026-11-24 14:07:41 +0700 | Ng Cong Kien | feat: homepage and category api, missing a few element. need backend
+6c8164a | 2026-11-20 11:49:06 +0700 | Ng Cong Kien | feature: ui implementation for homepage and catagory had not hook up with api, using mock info for now
+ed64c22 | 2026-11-20 01:01:36 +0700 | H | polish(admin): remove preview/demo indicators and redundant UI copy
+83d8fac | 2026-11-16 21:15:19 +0700 | H | feat(admin): wire AdminProvider, AdminWorkspace and dev-only admin route
+0b6ac77 | 2026-11-16 21:15:16 +0700 | H | feat(admin): add promotions, reviews, statistics and settings screens
+8989342 | 2026-11-16 21:15:15 +0700 | H | feat(admin): add orders and customers management screens
+1eccca8 | 2026-11-16 21:15:12 +0700 | H | feat(admin): add taxonomy, product sales overview and CSV import screens
+5324c5a | 2026-11-16 21:15:10 +0700 | H | feat(admin): add products list, editor and stock adjustment screens
+b8f8145 | 2026-11-16 21:15:08 +0700 | H | feat(admin): add synthetic catalog, operations and CSV import models with tests
+c72d536 | 2026-11-16 21:15:05 +0700 | H | feat(admin): add admin assets, styles and shared preview helpers
+718f59e | 2026-11-16 21:15:03 +0700 | H | feat(ui): extend Button, FormField, Dialog and admin surface token
+c9139d8 | 2026-11-16 21:15:00 +0700 | H | docs(admin): add admin design system extension and UX contract
+eed4193 | 2026-11-14 22:29:41 +0700 | Lê Đức Thịnh | Merge pull request #5 from Adiff-git/feat/chatboxdesign
+ab5600a | 2026-11-14 22:06:09 +0700 | DerZz | build chat widget open/close interaction
+595743b | 2026-11-14 21:51:53 +0700 | DerZz | feat: finalize chatbox design
+a467a06 | 2026-11-14 21:51:16 +0700 | H | specs doc
+633aa14 | 2026-11-13 20:24:21 +0700 | H | feat(auth): streamline signup form to transition directly to verification page
+ce4d3a9 | 2026-11-13 20:24:08 +0700 | H | feat(auth): implement dedicated OTP verification screen and state machine
+a3278d5 | 2026-11-13 20:23:57 +0700 | H | feat(auth): register /signup/verify route with guest protection and safe redirects
+01ef555 | 2026-11-13 20:23:40 +0700 | H | feat(auth): add in-memory signup session store with route-based cleanup
+00c32e0 | 2026-11-13 20:23:23 +0700 | H | feat(profile): auto-dismiss notification banners and refine orders notice
+cc0b578 | 2026-11-10 13:31:54 +0700 | H | update git ignore
+555ed91 | 2026-11-10 13:25:49 +0700 | H | fix(layout): extend store footer to full viewport width
+175dc4b | 2026-11-10 13:25:41 +0700 | H | fix(header): align avatar field with backend profileImageUrl and handle image fallback
+e2c21bf | 2026-11-10 13:25:35 +0700 | H | fix(auth): improve Google auth error message and preserve pending signup
+1751a14 | 2026-11-05 23:11:25 +0700 | H | feat(account): implement address book CRUD and orders preview
+4657de5 | 2026-11-05 23:11:05 +0700 | H | feat(account): implement customer profile, account shell, and shared dialogs
+f3b9d36 | 2026-11-05 23:10:21 +0700 | H | feat(dev): support email verification, OAuth, and address mock in Vite plugin
+3acae53 | 2026-11-05 23:10:10 +0700 | H | feat(auth): update authentication forms, validation, and AuthProvider
+1d46692 | 2026-11-05 23:10:05 +0700 | H | feat(auth): implement Google OAuth PKCE flow and callback
+1b70eb8 | 2026-11-05 23:09:52 +0700 | H | feat(auth): add OpenAPI authentication and identity endpoints
+216fd55 | 2026-11-05 23:07:25 +0700 | H | feat(api): enhance HTTP client, token store, and session transport
+82db894 | 2026-11-05 15:13:52 +0700 | H | fix(api): prevent stale refresh rejection from clearing new session
+5f5bb08 | 2026-11-05 13:06:54 +0700 | H | fix(auth): redirect to home page immediately after login and signup
+340ae18 | 2026-11-04 20:14:46 +0700 | H | feat(auth): update login and signup to use email and add google button
+8ff82f0 | 2026-11-04 19:52:22 +0700 | H | test: add tests for navigation and mock api
+049632f | 2026-11-04 19:52:01 +0700 | H | feat(dev): add mock api for local development
+23729b1 | 2026-11-04 19:51:45 +0700 | H | feat(layout): add header with user profile dropdown
+bb52b77 | 2026-11-04 19:51:33 +0700 | H | feat(routes): add protected routes and redirect guest
+84d15cc | 2026-11-04 19:51:23 +0700 | H | feat(auth): add auth provider and connect with auth forms
+6bdebd1 | 2026-11-04 19:51:04 +0700 | H | feat(api): update token store and api client for session handling
+4454571 | 2026-11-03 19:29:50 +0700 | H | test(auth): add credentials validation tests and document figma adaptation
+2d025dc | 2026-11-03 19:29:50 +0700 | H | feat(auth): integrate login and signup pages with auth screens
+2aad16d | 2026-11-03 19:29:50 +0700 | H | feat(auth): implement auth screen, form validation, and state hook
+3622a35 | 2026-11-03 19:29:50 +0700 | H | feat(api): support session persistence policy and display name update
+8fdb00d | 2026-11-03 19:29:50 +0700 | H | feat(ui): add shared button, form field, and auth layout components
+29bfc92 | 2026-11-03 19:29:50 +0700 | H | feat(styles): add figma design tokens, typography, and css variables
+4e10b9c | 2026-11-03 18:48:03 +0700 | H | docs: add requirements and user flow specifications
+376fbd5 | 2026-10-31 21:31:22 +0700 | DerZz | add git log
 45d3d1c | 2026-10-30 08:43:26 +0700 | Ng Cong Kien | feat: implement the api layer, with api endpoint for auth
 b62b3a8 | 2026-10-27 07:25:24 +0700 | Nguyễn Công Kiên | Merge pull request #1 from Adiff-git/chore/add-speckit
 c7ca273 | 2026-10-26 13:37:46 +0700 | Ng Cong Kien | chore: add speckit setup and constitution

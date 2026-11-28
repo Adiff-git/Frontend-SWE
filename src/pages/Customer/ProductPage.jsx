@@ -1,8 +1,9 @@
+import ProductDetailPage from '../../features/customer/product-detail/ProductDetailPage'
+
 function ProductPage() {
   return (
     <>
-      <h1>Product</h1>
-      <p>Placeholder for the product detail view.</p>
+      <ProductDetailPage />
     </>
   )
 }

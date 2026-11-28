@@ -1,0 +1,10 @@
+.category-toggle-group { min-width: 0; margin: 0; padding: 0; border: 0; }
+.category-toggle-group legend { width: 100%; margin-bottom: 10px; padding: 0; font-size: 13px; font-weight: 700; }
+.category-toggle-group__options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.category-toggle-group__option { min-height: 44px; display: flex; align-items: center; justify-content: center; padding: 6px; border: 0; border-radius: 10px; color: var(--color-text-secondary) !important; background: var(--color-surface-subtle); font-size: 10px; font-weight: 500; line-height: 1.35; text-align: center; cursor: pointer; }
+.category-toggle-group__option:hover { color: var(--color-brand-strong) !important; }
+.category-toggle-group__option--active { color: var(--color-text-inverse) !important; background: var(--color-brand); font-weight: 700; }
+.category-toggle-group--ram .category-toggle-group__options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.category-toggle-group--ram .category-toggle-group__option { min-height: 36px; padding: 4px; font-size: 11px; }
+.category-toggle-group--screens .category-toggle-group__option { min-height: 56px; }
+.category-toggle-group__icon { display: inline-flex; margin-right: 5px; color: var(--color-text-muted); }

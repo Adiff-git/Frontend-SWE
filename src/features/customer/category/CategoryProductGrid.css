@@ -1,0 +1,2 @@
+.category-product-grid { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
+.category-product-grid__empty { grid-column: 1 / -1; padding: 48px 20px; color: var(--color-text-secondary); text-align: center; }

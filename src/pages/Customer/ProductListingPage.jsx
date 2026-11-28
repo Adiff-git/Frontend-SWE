@@ -1,8 +1,9 @@
+import CategoryPage from "../../features/customer/category/CategoryPage";
+
 function ProductListingPage() {
   return (
     <>
-      <h1>Product Listing</h1>
-      <p>Placeholder for search and product listing functionality.</p>
+      <CategoryPage />
     </>
   )
 }

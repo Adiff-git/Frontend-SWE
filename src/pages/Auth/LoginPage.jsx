@@ -1,10 +1,5 @@
-function LoginPage() {
-  return (
-    <>
-      <h1>Login</h1>
-      <p>Placeholder for the login functionality.</p>
-    </>
-  )
-}
+import AuthScreen from '../../features/customer/auth/AuthScreen'
+
+function LoginPage() { return <AuthScreen mode="login" /> }
 
 export default LoginPage

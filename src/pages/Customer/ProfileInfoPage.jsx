@@ -1,10 +1,5 @@
-function ProfileInfoPage() {
-  return (
-    <>
-      <h1>Profile Information</h1>
-      <p>Placeholder for the customer's profile information.</p>
-    </>
-  )
-}
+import ProfileScreen from '../../features/customer/account/ProfileScreen';
 
-export default ProfileInfoPage
+export default function ProfileInfoPage() {
+  return <ProfileScreen />;
+}

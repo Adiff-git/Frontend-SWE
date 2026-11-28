@@ -1,0 +1,13 @@
+.account-security {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  padding: var(--space-24);
+  display: grid;
+  gap: var(--space-16);
+  min-width: 0;
+}
+.account-security h2 { margin: 0; font-family: var(--font-family-heading); }
+.account-security p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.account-security__fields { display: grid; gap: var(--space-16); margin: 0; padding: var(--space-16); border: 1px solid var(--color-border); min-width: 0; }
+.account-security__fields legend { padding: 0 var(--space-2); font-weight: 600; }
+.account-security__notice { color: var(--color-text-secondary); }

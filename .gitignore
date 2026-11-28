@@ -35,3 +35,9 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+Agents.md
+tasks/
+
+Claude.md
+docs/
