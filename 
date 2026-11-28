@@ -1,0 +1,41 @@
+[33m> 8e074a7[m[33m ([m[1;31morigin/feature/search-and-browse[m[33m)[m feat: ui and api connect for product detail screen include mock using VITE_USE_MOCKS=true in .env file
+[33m> f147b33[m[33m ([m[1;31morigin/feature/homepage[m[33m)[m Merge branch 'feature/user-profile-management' into feature/homepage
+[33m> c596fd9[m feat: homepage and category api, missing a few element. need backend
+[33m> 6c8164a[m feature: ui implementation for homepage and catagory had not hook up with api, using mock info for now
+[33m< eed4193[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m, [m[1;32mfeat/products-cards[m[33m)[m Merge pull request #5 from Adiff-git/feat/chatboxdesign
+[33m< ab5600a[m[33m ([m[1;32mfeat/product-cards-documentations[m[33m)[m build chat widget open/close interaction
+[33m< 595743b[m feat: finalize chatbox design
+[33m> a467a06[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/user-profile-management[m[33m, [m[1;31morigin/feature/user-profile-management[m[33m)[m specs doc
+[33m> 633aa14[m feat(auth): streamline signup form to transition directly to verification page
+[33m> ce4d3a9[m feat(auth): implement dedicated OTP verification screen and state machine
+[33m> a3278d5[m feat(auth): register /signup/verify route with guest protection and safe redirects
+[33m> 01ef555[m feat(auth): add in-memory signup session store with route-based cleanup
+[33m> 00c32e0[m feat(profile): auto-dismiss notification banners and refine orders notice
+[33m> cc0b578[m update git ignore
+[33m> 555ed91[m fix(layout): extend store footer to full viewport width
+[33m> 175dc4b[m fix(header): align avatar field with backend profileImageUrl and handle image fallback
+[33m> e2c21bf[m fix(auth): improve Google auth error message and preserve pending signup
+[33m> 1751a14[m feat(account): implement address book CRUD and orders preview
+[33m> 4657de5[m feat(account): implement customer profile, account shell, and shared dialogs
+[33m> f3b9d36[m feat(dev): support email verification, OAuth, and address mock in Vite plugin
+[33m> 3acae53[m feat(auth): update authentication forms, validation, and AuthProvider
+[33m> 1d46692[m feat(auth): implement Google OAuth PKCE flow and callback
+[33m> 1b70eb8[m feat(auth): add OpenAPI authentication and identity endpoints
+[33m> 216fd55[m feat(api): enhance HTTP client, token store, and session transport
+[33m> 82db894[m fix(api): prevent stale refresh rejection from clearing new session
+[33m> 5f5bb08[m fix(auth): redirect to home page immediately after login and signup
+[33m> 340ae18[m feat(auth): update login and signup to use email and add google button
+[33m> 8ff82f0[m test: add tests for navigation and mock api
+[33m> 049632f[m feat(dev): add mock api for local development
+[33m> 23729b1[m feat(layout): add header with user profile dropdown
+[33m> bb52b77[m feat(routes): add protected routes and redirect guest
+[33m> 84d15cc[m feat(auth): add auth provider and connect with auth forms
+[33m> 6bdebd1[m feat(api): update token store and api client for session handling
+[33m> 4454571[m[33m ([m[1;31morigin/feature/auth-ui[m[33m)[m test(auth): add credentials validation tests and document figma adaptation
+[33m> 2d025dc[m feat(auth): integrate login and signup pages with auth screens
+[33m> 2aad16d[m feat(auth): implement auth screen, form validation, and state hook
+[33m> 3622a35[m feat(api): support session persistence policy and display name update
+[33m> 8fdb00d[m feat(ui): add shared button, form field, and auth layout components
+[33m> 29bfc92[m feat(styles): add figma design tokens, typography, and css variables
+[33m< 376fbd5[m add git log
+[33m> 45d3d1c[m[33m ([m[1;31morigin/feature/api-layer[m[33m)[m feat: implement the api layer, with api endpoint for auth
