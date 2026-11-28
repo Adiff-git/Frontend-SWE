@@ -1,3 +1,6 @@
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import ChatWidget from '../features/assistant/ChatWidget'
+import './CustomerLayout.css'
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import './CustomerLayout.css';
@@ -9,6 +12,7 @@ function CustomerLayout() {
       <main className="customer-layout__content">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   );
 }
