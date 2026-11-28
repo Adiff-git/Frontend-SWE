@@ -9,8 +9,8 @@ export default function useFilterOptions(categoryId) {
   getFilterOptions(categoryId)
     .then((d) => { if (!ignore) setOptions(d); })
     .catch((err) => {
-      console.error(err); // remove before the PR
-      if (!ignore) setOptions({ brands: [], ram: [], cpu: [] });
+      console.error(err);
+      if (!ignore) setOptions({ brands: [], uses: [], ram: [], cpus: [], screens: [] });
     });
   return () => { ignore = true; };
 }, [categoryId]);

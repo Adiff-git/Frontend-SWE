@@ -58,14 +58,16 @@ function buildSpecFilters({ minRam, cpus = [], screens = [] }) {
 }
 
 export async function getFilterOptions(categoryId) {
-  const [brands, specs] = await Promise.all([
+  const [brandsRes, specsRes] = await Promise.allSettled([
     api.get("/api/brands", {}, { auth: false }),
     api.get("/api/product-filter-options", { categoryId }, { auth: false }),
   ]);
+  const brands = brandsRes.status === "fulfilled" ? brandsRes.value : [];
+  const specs = specsRes.status === "fulfilled" ? specsRes.value : [];
   const byKey = Object.fromEntries(specs.map((g) => [g.key, g.options]));
   return {
     brands: brands.map((b) => ({ id: b.id, name: b.name, count: b.productCount })),
-    uses: [],                                              // no endpoint yet
+    uses: [],
     ram: (byKey.physical_ram ?? []).map((o) => o.value),
     cpus: (byKey.cpu_family ?? []).map((o) => o.value),
     screens: byKey.display_diagonal ? Object.keys(SCREEN_RANGES) : [],
