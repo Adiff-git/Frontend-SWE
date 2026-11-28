@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { getFilterOptions } from "./categoryApi";
 
-export default function useFilterOptions(category) {
+export default function useFilterOptions(categoryId) {
   const [options, setOptions] = useState(null);
   useEffect(() => {
-    let ignore = false;
-    getFilterOptions(category).then((data) => { if (!ignore) setOptions(data); });
-    return () => { ignore = true; };
-  }, [category]);
-  return options; // null until loaded
+  if (!categoryId) return;
+  let ignore = false;
+  getFilterOptions(categoryId)
+    .then((d) => { if (!ignore) setOptions(d); })
+    .catch((err) => {
+      console.error(err); // remove before the PR
+      if (!ignore) setOptions({ brands: [], ram: [], cpu: [] });
+    });
+  return () => { ignore = true; };
+}, [categoryId]);
+  return options;
 }

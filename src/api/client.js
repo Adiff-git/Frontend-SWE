@@ -24,8 +24,12 @@ function buildUrl(path, params) {
   const url = new URL(path, base);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
-      // .set (not .append): the contract rejects duplicate query parameters
-      if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
+      if (v === undefined || v === null || v === '') return;
+      if (Array.isArray(v)) {
+        v.forEach((item) => url.searchParams.append(k, item));
+      } else {
+        url.searchParams.set(k, v);
+      }
     });
   }
   return url;
