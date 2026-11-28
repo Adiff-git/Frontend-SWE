@@ -2,7 +2,7 @@ import { IconSearch } from "@tabler/icons-react";
 import ProductCard from "./ProductCard";
 import "./FeaturedProducts.css";
 
-export default function FeaturedProducts({ brands, activeBrand, addedProducts, onAddToCart, onBrandChange, onSearchChange, products, search }) {
+export default function FeaturedProducts({ brands, activeBrand, addedProducts, addingProductId, onAddToCart, onBrandChange, onSearchChange, products, search }) {
   return (
     <section className="featured" id="featured-products" data-node-id="3:9334" aria-labelledby="featured-title">
       <div className="featured__heading">
@@ -28,7 +28,8 @@ export default function FeaturedProducts({ brands, activeBrand, addedProducts, o
           <ProductCard
             key={product.id}
             added={addedProducts.includes(product.id)}
-            onAddToCart={() => onAddToCart(product.id)}
+            adding={addingProductId === product.id}
+            onAddToCart={onAddToCart}
             product={product}
           />
         ))}

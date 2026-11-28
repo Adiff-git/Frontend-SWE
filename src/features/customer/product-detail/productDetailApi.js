@@ -214,6 +214,7 @@ export function toSimilarProductView(item) {
     price: formatMoney(item?.displayPrice?.amount),
     oldPrice: null,
     status: STATUS_LABELS[availability.status] ?? 'Đang cập nhật',
+    inStock: availability.status === 'IN_STOCK',
     colors: [],
     colorName: '',
     specs: categoryName ? [String(categoryName)] : [],

@@ -1,2 +1,3 @@
 .category-product-grid { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
 .category-product-grid__empty { grid-column: 1 / -1; padding: 48px 20px; color: var(--color-text-secondary); text-align: center; }
+.category-product-grid__message { grid-column: 1 / -1; margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--color-surface-subtle); color: var(--color-text-secondary); font-size: 14px; }

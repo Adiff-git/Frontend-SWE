@@ -1,13 +1,18 @@
 import { api } from "../../../api/client";
 import { categories, heroSlides, brands, discoveryPrompts } from "../../../mocks/storefront";
 
+const formatVnd = (amount) => `${new Intl.NumberFormat("vi-VN").format(Number(amount))}₫`;
+
 export const toProductCard = (p) => ({
   id: p.id,
   name: p.name,
   image: p.primaryImageUrl,
-  price: p.displayPrice ? Number(p.displayPrice.amount) : null,
+  price: p.displayPrice ? formatVnd(p.displayPrice.amount) : null,
   inStock: p.availability?.status === "IN_STOCK",
+  status: p.availability?.status === "IN_STOCK" ? "Sẵn hàng" : "Hết hàng",
   variantId: p.representativeVariantId,
+  brand: p.brand?.name ?? "",
+  category: p.category?.name ?? "",
 });
 
 export async function getStorefront() {

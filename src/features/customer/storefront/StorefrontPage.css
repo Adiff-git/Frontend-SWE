@@ -33,6 +33,7 @@
 .storefront button { color: inherit; }
 .storefront :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
 .storefront__content { width: min(100% - 64px, 1216px); margin-inline: auto; padding-top: 24px; }
+.storefront__cart-message { margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: var(--color-surface-subtle); color: var(--color-text-secondary); font-size: 14px; }
 
 @media (max-width: 900px) {
   .storefront__content { width: min(100% - 40px, 1216px); }

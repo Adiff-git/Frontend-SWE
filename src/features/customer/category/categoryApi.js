@@ -14,6 +14,7 @@ const toProductCard = (p) => ({
   image: p.primaryImageUrl,
   price: p.displayPrice ? Number(p.displayPrice.amount) : null,
   inStock: p.availability?.status === "IN_STOCK",
+  status: p.availability?.status === "IN_STOCK" ? "Sẵn hàng" : "Hết hàng",
   variantId: p.representativeVariantId,
   // brand, rating, specs: not in the listing API yet (TODO)
 });

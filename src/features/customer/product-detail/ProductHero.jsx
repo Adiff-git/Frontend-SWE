@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { IconCamera, IconShieldCheck, IconShoppingBag, IconShoppingCart } from "@tabler/icons-react";
 import useAuth from "../../../hooks/useAuth";
 import useCart from "../cart/useCart.js";
 import { buildAddIntent, readAddIntent } from "../cart/cartIntent.js";
+import { mapApiError } from "../cart/cartReasons.js";
 import "./ProductHero.css";
 
 const money = (price) => `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
@@ -11,7 +13,8 @@ const money = (price) => `${new Intl.NumberFormat("vi-VN").format(price)}₫`;
 export default function ProductHero({ product, inStock = true }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, user, generation } = useAuth();
   const cart = useCart();
   const { notice, busy: cartBusy, addItem } = cart;
   const options = Array.isArray(product?.options) ? product.options : [];
@@ -25,6 +28,7 @@ export default function ProductHero({ product, inStock = true }) {
   const [quantity, setQuantity] = useState(restoredQuantity);
   const [localMessage, setLocalMessage] = useState("");
   const [localBusy, setLocalBusy] = useState(false);
+  const intentHandledRef = useRef(false);
   const selectedIndex = Math.min(selected, Math.max(options.length - 1, 0));
   const option = options[selectedIndex] ?? { storage: "", price: 0, originalPrice: 0, inventory: 0, inStock: false };
   const canPurchase = Boolean(inStock && option.inStock !== false && option.inventory > 0);
@@ -34,6 +38,30 @@ export default function ProductHero({ product, inStock = true }) {
     ? Math.round((1 - option.price / option.originalPrice) * 100)
     : 0;
   const message = localMessage || notice;
+
+  useEffect(() => {
+    if (!intent || intentHandledRef.current || !isAuthenticated || !option.variantId) return;
+    if (intent.variantId !== option.variantId) return;
+    intentHandledRef.current = true;
+    let active = true;
+    const run = async () => {
+      await Promise.resolve();
+      if (!active) return;
+      setLocalBusy(true);
+      try {
+        await addItem({ productVariantId: option.variantId, quantity: displayedQuantity });
+        if (user?.id) await queryClient.invalidateQueries({ queryKey: ["cart", user.id, generation] });
+        if (active) setLocalMessage("Đã thêm sản phẩm vào giỏ hàng.");
+        navigate(location.pathname, { replace: true, state: null });
+      } catch (error) {
+        if (active) setLocalMessage(mapApiError(error));
+      } finally {
+        if (active) setLocalBusy(false);
+      }
+    };
+    void run();
+    return () => { active = false; };
+  }, [addItem, displayedQuantity, generation, intent, isAuthenticated, location.pathname, navigate, option.variantId, queryClient, user?.id]);
 
   async function handleAddToCart() {
     if (!option.variantId) {
@@ -59,9 +87,10 @@ export default function ProductHero({ product, inStock = true }) {
     setLocalBusy(true);
     try {
       await addItem({ productVariantId: option.variantId, quantity: displayedQuantity });
+      if (user?.id) await queryClient.invalidateQueries({ queryKey: ["cart", user.id, generation] });
       setLocalMessage("Đã thêm sản phẩm vào giỏ hàng.");
     } catch (error) {
-      void error;
+      setLocalMessage(mapApiError(error));
     } finally {
       setLocalBusy(false);
     }
