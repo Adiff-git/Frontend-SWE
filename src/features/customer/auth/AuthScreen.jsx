@@ -7,7 +7,10 @@ import './AuthScreen.css';
 function AuthScreen({ mode }) {
   const signup = mode === 'signup';
   const location = useLocation();
-  const destination = getSafeReturnDestination(location.state?.from, location.search);
+  const destination = getSafeReturnDestination(
+    location.state?.intent ?? location.state?.from,
+    location.search,
+  );
 
   return (
     <section className="auth-screen" aria-label={signup ? 'Đăng ký tài khoản' : 'Đăng nhập tài khoản'}>

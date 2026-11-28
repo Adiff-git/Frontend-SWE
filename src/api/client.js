@@ -55,7 +55,11 @@ async function send(url, { method, body, headers, auth, signal, credentials }) {
   }
 }
 
-const parse = (res) => (res.status === 204 ? null : res.json().catch(() => null));
+const parse = (res, responseType) => {
+  if (res.status === 204) return null;
+  if (responseType === 'text') return res.text();
+  return res.json().catch(() => null);
+};
 
 // Auth spec exposes `message` + `detail`; catalog spec only `detail`. Support both.
 const toError = (res, data) =>
@@ -75,7 +79,7 @@ export function assertSession(generation) {
 }
 
 async function request(path, { method = 'GET', body, params, headers, auth = true,
-  autoRefresh = true, withHeaders = false, signal, credentials, expectedStatus } = {}) {
+  autoRefresh = true, withHeaders = false, signal, credentials, expectedStatus, responseType } = {}) {
   const generation = tokens.getGeneration();
   const options = { method, body, headers, auth, signal, credentials };
   const url = buildUrl(path, params);
@@ -90,7 +94,7 @@ async function request(path, { method = 'GET', body, params, headers, auth = tru
       onSessionExpired();
     }
   }
-  const data = await parse(res);
+  const data = await parse(res, res.ok ? responseType : undefined);
   if (auth) assertSession(generation);
   if (!res.ok) throw toError(res, data);
   if (expectedStatus && res.status !== expectedStatus) {

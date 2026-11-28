@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './authContext';
 import { assertSession, setSessionExpiredHandler } from '../../../api/client';
@@ -11,6 +12,8 @@ const privateQuery = (query) => ['profile', 'addresses', 'orders', 'cart', 'goog
 
 export default function AuthProvider({ children }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [generation, setGeneration] = useState(() => tokens.getGeneration());
   const [hasStoredSession, setHasStoredSession] = useState(() => tokens.hasSession());
   const [isCompletingAuth, setIsCompletingAuth] = useState(false);
@@ -29,10 +32,15 @@ export default function AuthProvider({ children }) {
     clearPrivate();
   }, [clearPrivate]);
 
+  const handleSessionExpired = useCallback(() => {
+    clearSession();
+    navigate('/login', { replace: true, state: { from: location } });
+  }, [clearSession, navigate, location]);
+
   useEffect(() => {
-    setSessionExpiredHandler(clearSession);
+    setSessionExpiredHandler(handleSessionExpired);
     return () => setSessionExpiredHandler(null);
-  }, [clearSession]);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
     const handleStorage = (event) => {

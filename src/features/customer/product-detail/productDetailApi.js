@@ -1,4 +1,5 @@
 import { api } from '../../../api/client.js';
+import { filterVariantsForProduct } from '../cart/cartMappers.js';
 import { highlights as mockHighlights, product as mockProduct } from '../../../mocks/product-detail.js';
 
 // TODO: Backend has no original/list price field; these are mock fallback values only.
@@ -123,6 +124,7 @@ export function toProductHeroView(product) {
   const options = variants.map((variant, index) => {
     const storage = readStorage(variant, index);
     return {
+      variantId: String(variant?.id ?? ''),
       storage,
       price: formatAmount(variant?.sellingPrice?.amount),
       originalPrice: mockOriginalPrice(storage, index),
@@ -134,6 +136,7 @@ export function toProductHeroView(product) {
 
   if (!options.length) {
     options.push({
+      variantId: '',
       storage: 'Mặc định',
       price: 0,
       originalPrice: 0,
@@ -247,6 +250,13 @@ function publicRequestOptions(options) {
 
 export function getProductDetail(id, options = {}) {
   return api.get(`/api/products/${encodeURIComponent(id)}`, undefined, publicRequestOptions(options));
+}
+
+export function getProductVariants(id, options = {}) {
+  return getProductDetail(id, options).then((product) => {
+    const variants = filterVariantsForProduct(product?.variants, product?.id);
+    return toProductHeroView({ ...product, variants }).options.filter((option) => option.variantId);
+  });
 }
 
 export function getProductReviews(id, options = {}) {

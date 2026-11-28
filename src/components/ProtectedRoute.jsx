@@ -3,9 +3,15 @@ import useAuth from '../hooks/useAuth';
 import Button from './Button';
 import './ProtectedRoute.css';
 
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
+
 export default function ProtectedRoute() {
   const { status, error, retryBootstrap, logout } = useAuth();
   const location = useLocation();
+
+  if (USE_MOCKS) {
+    return <Outlet />;
+  }
 
   if (status === 'checking') {
     return (

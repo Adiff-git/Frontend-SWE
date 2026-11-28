@@ -14,6 +14,7 @@ import ProfileInfoPage from './pages/Customer/ProfileInfoPage';
 import OrdersPage from './pages/Customer/OrdersPage';
 import AddressesPage from './pages/Customer/AddressesPage';
 import CartPage from './pages/Customer/CartPage';
+import useCartCount from './features/customer/cart/useCartCount';
 import CheckoutPage from './pages/Customer/CheckoutPage';
 import NotFoundPage from './pages/Customer/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
@@ -24,6 +25,8 @@ import ResetPassPage from './pages/Auth/ResetPassPage';
 import GoogleCallbackPage from './pages/Auth/GoogleCallbackPage';
 
 function App({ googleCallback }) {
+  const cartCount = useCartCount();
+
   return (
     <LogoutConfirmationProvider>
       <SignupSessionCleanup />
@@ -44,15 +47,15 @@ function App({ googleCallback }) {
         </Route>
 
         {/* Customer Storefront layout */}
-        <Route element={<CustomerLayout />}>
+        <Route element={<CustomerLayout cartCount={cartCount} />}>
           {/* Public customer routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductListingPage />} />
           <Route path="/products/:id" element={<ProductPage />} />
-          <Route path="/cart" element={<CartPage />} />
 
           {/* Protected customer routes */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/cart" element={<CartPage />} />
             <Route element={<AccountLayout />}>
               <Route path="/profile" element={<Navigate to="/profile/info" replace />} />
               <Route path="/profile/info" element={<ProfileInfoPage />} />
